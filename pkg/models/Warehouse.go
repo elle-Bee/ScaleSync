@@ -4,6 +4,7 @@ type Warehouse struct {
 	Location        string `json:"location"`
 	CurrentCapacity int    `json:"current_capacity"`
 	TotalCapacity   int    `json:"total_capacity"`
+	Admin           User   `json:"admin"`
 }
 
 func NewWarehouse(location string, current_capacity, total_capacity int) *Warehouse {
