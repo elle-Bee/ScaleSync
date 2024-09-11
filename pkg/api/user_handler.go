@@ -1,26 +1,27 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 
-	db "ScaleSync/pkg/database"
-	"ScaleSync/pkg/models"
+	"ScaleSync/pkg/service"
 
 	"github.com/gorilla/mux"
 )
 
-func CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user models.User
+type UserHandler struct {
+	UserService service.UserService
+}
+
+func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	var user service.UserDTO
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
-	query := `INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id`
-	err := db.Pool.QueryRow(context.Background(), query, user.Name, user.Email).Scan(&user.ID)
+	createdUser, err := h.UserService.CreateUser(user)
 	if err != nil {
 		http.Error(w, "Error creating user", http.StatusInternalServerError)
 		log.Println("Create User Error:", err)
@@ -28,15 +29,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(createdUser)
 }
 
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	var user models.User
-	query := `SELECT id, name, email FROM users WHERE id = $1`
-	err := db.Pool.QueryRow(context.Background(), query, id).Scan(&user.ID, &user.Name, &user.Email)
+	user, err := h.UserService.GetUser(id)
 	if err != nil {
 		http.Error(w, "User not found", http.StatusNotFound)
 		return
@@ -46,16 +45,15 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func UpdateUser(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	var user models.User
+	var user service.UserDTO
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
-	query := `UPDATE users SET name=$1, email=$2 WHERE id=$3`
-	_, err := db.Pool.Exec(context.Background(), query, user.Name, user.Email, id)
+	updatedUser, err := h.UserService.UpdateUser(id, user)
 	if err != nil {
 		http.Error(w, "Error updating user", http.StatusInternalServerError)
 		log.Println("Update User Error:", err)
@@ -63,14 +61,13 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(updatedUser)
 }
 
-func DeleteUser(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	query := `DELETE FROM users WHERE id=$1`
 
-	_, err := db.Pool.Exec(context.Background(), query, id)
+	err := h.UserService.DeleteUser(id)
 	if err != nil {
 		http.Error(w, "Error deleting user", http.StatusInternalServerError)
 		return
@@ -79,24 +76,12 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Pool.Query(context.Background(), `SELECT id, name, email FROM users`)
+func (h *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := h.UserService.GetAllUsers()
 	if err != nil {
 		http.Error(w, "Error fetching users", http.StatusInternalServerError)
 		log.Println("Get All Users Error:", err)
 		return
-	}
-	defer rows.Close()
-
-	var users []models.User
-	for rows.Next() {
-		var user models.User
-		err = rows.Scan(&user.ID, &user.Name, &user.Email)
-		if err != nil {
-			log.Println("Error scanning user:", err)
-			continue
-		}
-		users = append(users, user)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
