@@ -2,7 +2,6 @@ package service
 
 import (
 	"ScaleSync/pkg/models"
-	"ScaleSync/pkg/repository"
 )
 
 type UserService interface {
