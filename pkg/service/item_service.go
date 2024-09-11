@@ -3,46 +3,46 @@ package service
 import (
 	"ScaleSync/pkg/models"
 	"ScaleSync/pkg/repo"
-
+	"errors"
 )
 
 type ItemService interface {
-    CreateItem(item *models.Item) error
-    GetItems() ([]*models.Item, error)
-    GetItem(item_id int) (*models.Item, error)
-    UpdateItem(item *models.Item) error
-    DeleteItem(item_id int) error
+	CreateItem(item *models.Item) error
+	GetItems() ([]*models.Item, error)
+	GetItem(item_id int) (*models.Item, error)
+	UpdateItem(item *models.Item) error
+	DeleteItem(item_id int) error
 }
 
 type ItemServiceImpl struct {
-	Repo repository.ItemRepository
+	Repo repo.ItemRepository
 }
 
 func (s *ItemServiceImpl) CreateItem(item *models.Item) error {
-	if item.Name == "" || item.quantity <= 0 {
-		return error.new("invalid item data")
+	if item.Name == "" || item.Quantity <= 0 {
+		return errors.New("invalid item data")
 	}
-	return s.repo.Create(item)
+	return s.Repo.Create(item)
 }
 
-func (s *ItemServiceImpl) GetItems() ([]*models.Item, error) error {
-	return s.repo.ReadAll()
+func (s *ItemServiceImpl) GetItems() ([]*models.Item, error) {
+	return s.Repo.ReadAll()
 }
 
-func (s *ItemServiceImpl) GetItem (item_id int) error {
-	return s.repo.Read(item_id)
+func (s *ItemServiceImpl) GetItem(item_id int) (*models.Item, error) {
+	return s.Repo.Read(item_id)
 }
 
 func (s *ItemServiceImpl) UpdateItem(item *models.Item) error {
-	if item.item_id <= 0 {
-		return error.new("invalid item ID")
+	if item.Item_ID <= 0 {
+		return errors.New("invalid item ID")
 	}
-	return s.repo.update(item)
+	return s.Repo.Update(item)
 }
 
 func (s *ItemServiceImpl) DeleteItem(item_id int) error {
-	if item.item_id <= 0 {
-		error.new("invalid item ID")
+	if item_id <= 0 {
+		errors.New("invalid item ID")
 	}
-	return s.repo.Delete(item_id)
+	return s.Repo.Delete(item_id)
 }
