@@ -2,6 +2,7 @@ package service
 
 import (
 	"ScaleSync/pkg/models"
+	"ScaleSync/pkg/repo"
 )
 
 type UserService interface {
@@ -13,7 +14,7 @@ type UserService interface {
 }
 
 type userService struct {
-	UserRepo repository.UserRepository
+	UserRepo repo.UserRepository
 }
 
 // UserDTO represents data transfer object for user
@@ -22,7 +23,7 @@ type UserDTO struct {
 	Email string `json:"email"`
 }
 
-func NewUserService(repo repository.UserRepository) UserService {
+func NewUserService(repo repo.UserRepository) UserService {
 	return &userService{
 		UserRepo: repo,
 	}
