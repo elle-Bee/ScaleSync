@@ -1,9 +1,9 @@
 package models
 
 type Item struct {
-	ID          int     `json:"item_id"`
-	Category    string  `json:"category"`
+	Item_ID     int     `json:"item_id"`
 	Name        string  `json:"name"`
+	Category    string  `json:"category"`
 	Description string  `json:"description"`
 	Quantity    int     `json:"descrption"`
 	UnitPrice   float64 `json:"unit_price"`

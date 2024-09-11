@@ -1,6 +1,10 @@
 package service
 
-import "ScaleSync/pkg/models"
+import (
+	"ScaleSync/pkg/models"
+	"ScaleSync/pkg/repo"
+
+)
 
 type ItemService struct {
 	CreateItem(item *models.Item) error
@@ -21,7 +25,7 @@ func (s *ItemServiceImpl) CreateItem(item *models.Item) error {
 	return s.repo.Create(item)
 }
 
-func (s *ItemServiceImpl) GetItems() error {
+func (s *ItemServiceImpl) GetItems() ([]*models.Item, error) error {
 	return s.repo.ReadAll()
 }
 
