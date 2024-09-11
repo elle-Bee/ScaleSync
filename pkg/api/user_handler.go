@@ -1,3 +1,4 @@
+// user_handler.go
 package api
 
 import (
@@ -5,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"ScaleSync/pkg/models"
 	"ScaleSync/pkg/service"
 
 	"github.com/gorilla/mux"
@@ -15,7 +17,7 @@ type UserHandler struct {
 }
 
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user service.UserDTO
+	var user models.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
@@ -47,7 +49,7 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	var user service.UserDTO
+	var user models.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return

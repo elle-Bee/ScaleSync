@@ -3,62 +3,64 @@ package service
 import (
 	"ScaleSync/pkg/models"
 	"ScaleSync/pkg/repo"
+	"errors"
 )
 
+// UserService defines the interface for user-related business operations
 type UserService interface {
-	CreateUser(user UserDTO) (*models.User, error)
-	GetUser(id string) (*models.User, error)
-	UpdateUser(id string, user UserDTO) (*models.User, error)
-	DeleteUser(id string) error
-	GetAllUsers() ([]models.User, error)
+	CreateUser(user *models.User) error
+	GetAllUsers() ([]*models.User, error)
+	GetUser(userID int) (*models.User, error)
+	UpdateUser(user *models.User) error
+	DeleteUser(userID int) error
 }
 
-type userService struct {
-	UserRepo repo.UserRepository
+// userServiceImpl is the concrete implementation of the UserService interface
+type userServiceImpl struct {
+	Repo repo.UserRepository
 }
 
-// UserDTO represents data transfer object for user
-type UserDTO struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-
+// NewUserService returns an implementation of UserService
 func NewUserService(repo repo.UserRepository) UserService {
-	return &userService{
-		UserRepo: repo,
+	return &userServiceImpl{
+		Repo: repo,
 	}
 }
 
-func (s *userService) CreateUser(user UserDTO) (*models.User, error) {
-	newUser := &models.User{
-		Name:  user.Name,
-		Email: user.Email,
+// CreateUser handles business logic and creates a user in the repository
+func (s *userServiceImpl) CreateUser(user *models.User) error {
+	// Example validation logic
+	if user.Name == "" || user.Email == "" {
+		return errors.New("invalid user data")
 	}
-
-	createdUser, err := s.UserRepo.CreateUser(newUser)
-	return createdUser, err
+	return s.Repo.Create(user)
 }
 
-func (s *userService) GetUser(id string) (*models.User, error) {
-	return s.UserRepo.GetUser(id)
+// GetAllUsers fetches all users from the repository
+func (s *userServiceImpl) GetAllUsers() ([]*models.User, error) {
+	return s.Repo.ReadAll()
 }
 
-func (s *userService) UpdateUser(id string, user UserDTO) (*models.User, error) {
-	existingUser, err := s.UserRepo.GetUser(id)
-	if err != nil {
-		return nil, err
+// GetUser fetches a single user by ID from the repository
+func (s *userServiceImpl) GetUser(userID int) (*models.User, error) {
+	if userID <= 0 {
+		return nil, errors.New("invalid user ID")
 	}
-
-	existingUser.Name = user.Name
-	existingUser.Email = user.Email
-
-	return s.UserRepo.UpdateUser(existingUser)
+	return s.Repo.Read(userID)
 }
 
-func (s *userService) DeleteUser(id string) error {
-	return s.UserRepo.DeleteUser(id)
+// UpdateUser handles business logic and updates a user in the repository
+func (s *userServiceImpl) UpdateUser(user *models.User) error {
+	if user.ID <= 0 {
+		return errors.New("invalid user ID")
+	}
+	return s.Repo.Update(user)
 }
 
-func (s *userService) GetAllUsers() ([]models.User, error) {
-	return s.UserRepo.GetAllUsers()
+// DeleteUser deletes a user by ID from the repository
+func (s *userServiceImpl) DeleteUser(userID int) error {
+	if userID <= 0 {
+		return errors.New("invalid user ID")
+	}
+	return s.Repo.Delete(userID)
 }
