@@ -10,11 +10,11 @@ type Item struct {
 	TotalPrice  float64 `json:"total_price"`
 }
 
-func NewItem(id int, category, name, description string, unit_price float64, quantity int) *Item {
+func NewItem(item_id int, category, name, description string, unit_price float64, quantity int) *Item {
 	total_price := unit_price * float64(quantity)
 
 	return &Item{
-		ID:          id,
+		Item_ID:     item_id,
 		Category:    category,
 		Name:        name,
 		Description: description,
