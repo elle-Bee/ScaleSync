@@ -13,3 +13,32 @@ type ItemService struct {
 type ItemServiceImpl struct {
 	Repo repository.ItemRepository
 }
+
+func (s *ItemServiceImpl) CreateItem(item *models.Item) error {
+	if item.Name == "" || item.quantity <= 0 {
+		return error.new("invalid item data")
+	}
+	return s.repo.Create(item)
+}
+
+func (s *ItemServiceImpl) GetItems() error {
+	return s.repo.ReadAll()
+}
+
+func (s *ItemServiceImpl) GetItem (item_id int) error {
+	return s.repo.Read(item_id)
+}
+
+func (s *ItemServiceImpl) UpdateItem(item *models.Item) error {
+	if item.item_id <= 0 {
+		return error.new("invalid item ID")
+	}
+	return s.repo.update(item)
+}
+
+func (s *ItemServiceImpl) DeleteItem(item_id int) error {
+	if item.item_id <= 0 {
+		error.new("invalid item ID")
+	}
+	return s.repo.Delete(item_id)
+}
