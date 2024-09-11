@@ -6,8 +6,8 @@ import (
 
 )
 
-type ItemService struct {
-	CreateItem(item *models.Item) error
+type ItemService interface {
+    CreateItem(item *models.Item) error
     GetItems() ([]*models.Item, error)
     GetItem(item_id int) (*models.Item, error)
     UpdateItem(item *models.Item) error
