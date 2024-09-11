@@ -1,15 +1,16 @@
 package api
 
 import (
+	db "ScaleSync/pkg/database"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-func main() {
-	pool = InitDB() // Initialize the database connection
-	defer pool.Close()
+func Login() {
+	db.Pool = db.InitDB() // Initialize the database connection
+	defer db.Pool.Close()
 
 	r := mux.NewRouter()
 

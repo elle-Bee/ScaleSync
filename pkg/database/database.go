@@ -1,4 +1,4 @@
-package pkg
+package database
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var pool *pgxpool.Pool
+var Pool *pgxpool.Pool
 
 func InitDB() *pgxpool.Pool {
 	err := godotenv.Load(".env")
