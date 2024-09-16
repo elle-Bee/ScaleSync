@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -15,13 +16,23 @@ import (
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	json.NewDecoder(r.Body).Decode(&user)
+
+	var exists bool
+	checkQuery := `Select exists(SELECT 1 FROM users WHERE name = '` + user.Name + `')`
+	database.Pool.QueryRow(context.Background(), checkQuery).Scan(&exists)
+	fmt.Println(user.Name)
+	fmt.Println(exists)
+	if exists {
+		http.Error(w, "Username is taken", http.StatusInternalServerError)
+		return
+	}
 	hash_passwd := database.HashPassword(user.Password)
 
 	query := `INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id`
-	err := database.Pool.QueryRow(context.Background(), query, user.Name, user.Email, hash_passwd).Scan(&user.ID)
-	if err != nil {
+	err2 := database.Pool.QueryRow(context.Background(), query, user.Name, user.Email, hash_passwd).Scan(&user.ID)
+	if err2 != nil {
 		http.Error(w, "Error creating user", http.StatusInternalServerError)
-		log.Println("Create User Error:", err)
+		log.Println("Create User Error:", err2)
 		return
 	}
 

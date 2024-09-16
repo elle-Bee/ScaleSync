@@ -8,7 +8,8 @@ type User struct {
 }
 
 type User_login struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID      int    `json:"id"`
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Session bool
 }
