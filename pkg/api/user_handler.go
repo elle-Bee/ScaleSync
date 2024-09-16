@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"learn/pkg/database"
-	"learn/pkg/models"
+	"ScaleSync/pkg/database"
+	"ScaleSync/pkg/models"
 
 	"github.com/gorilla/mux"
 )
@@ -92,18 +92,4 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(users)
-}
-
-func loginUser(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-
-	var user models.User
-	query := `name, email, passwd FROM users WHERE id = $1`
-	err := database.Pool.QueryRow(context.Background(), query, id).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
-	if err != nil {
-		http.Error(w, "User not found", http.StatusNotFound)
-		return
-	}
-
-	json.NewEncoder(w).Encode(user)
 }

@@ -1,9 +1,9 @@
 package repository
 
 import (
+	"ScaleSync/pkg/models"
 	"database/sql"
 	"errors"
-	"learn/pkg/models"
 )
 
 type ItemRepository struct {

@@ -1,9 +1,9 @@
 package api
 
 import (
+	"ScaleSync/pkg/models"
+	"ScaleSync/pkg/service"
 	"encoding/json"
-	"learn/pkg/models"
-	"learn/pkg/service"
 	"net/http"
 	"strconv"
 

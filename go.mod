@@ -1,4 +1,4 @@
-module learn
+module ScaleSync
 
 go 1.21.1
 

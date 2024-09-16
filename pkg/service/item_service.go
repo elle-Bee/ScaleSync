@@ -1,9 +1,9 @@
 package service
 
 import (
+	"ScaleSync/pkg/models"
+	"ScaleSync/pkg/repository"
 	"errors"
-	"learn/pkg/models"
-	"learn/pkg/repository"
 )
 
 type ItemService interface {

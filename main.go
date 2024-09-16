@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"learn/pkg/api"
-	"learn/pkg/database"
+	"ScaleSync/pkg/api"
+	"ScaleSync/pkg/database"
 
 	"github.com/gorilla/mux"
 )
@@ -18,9 +18,12 @@ func Login() {
 
 	r.HandleFunc("/users", api.CreateUser).Methods("POST")
 	r.HandleFunc("/users", api.GetAllUsers).Methods("GET")
+
 	r.HandleFunc("/users/{id}", api.GetUser).Methods("GET")
 	r.HandleFunc("/users/{id}", api.UpdateUser).Methods("PATCH")
 	r.HandleFunc("/users/{id}", api.DeleteUser).Methods("DELETE")
+
+	r.HandleFunc("/login", api.LoginUser).Methods("POST")
 
 	log.Println("Server running at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
