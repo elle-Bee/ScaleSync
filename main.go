@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"sync"
@@ -78,7 +78,7 @@ func fetchUsers() {
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		var users []models.User
 		json.Unmarshal(body, &users)
 		userList := ""
