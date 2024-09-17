@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ScaleSync/pkg/models"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -17,13 +18,14 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
-// User struct for GUI to create user
-type User struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 }
 
 func Login() {
@@ -46,7 +48,7 @@ func Login() {
 }
 
 func createUser(name, email, password string) {
-	userData := User{
+	userData := models.User{
 		Name:     name,
 		Email:    email,
 		Password: password,
@@ -77,7 +79,7 @@ func fetchUsers() {
 
 	if resp.StatusCode == http.StatusOK {
 		body, _ := ioutil.ReadAll(resp.Body)
-		var users []User
+		var users []models.User
 		json.Unmarshal(body, &users)
 		userList := ""
 		for _, user := range users {
