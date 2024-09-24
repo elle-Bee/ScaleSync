@@ -55,8 +55,8 @@ func showMainPage(win fyne.Window) {
 		showSignUpPage(win) // Navigate to the sign-up page
 	})
 
-	// Form layout
-	form := container.NewVBox(
+	// content layout
+	content := container.NewVBox(
 		smallSpacer,
 		appName,
 		largeSpacer,
@@ -70,8 +70,8 @@ func showMainPage(win fyne.Window) {
 		signUp,
 	)
 
-	// Set form as the content of the window
-	win.SetContent(form)
+	// Set content as the content of the window
+	win.SetContent(content)
 }
 
 // Initialize HTTP server for user management and login

@@ -44,7 +44,29 @@ func showSignUpPage(win fyne.Window) {
 		createUser(nameEntry.Text, emailEntry.Text, PasswordEntry.Text)
 	})
 
-	content := container.NewVBox(SmallSpacer, AppName, Spacer, emailEntry, nameEntry, PasswordEntry, SmallSpacer, sign_up)
+	or := canvas.NewText("----------------- OR -----------------", color.White)
+	or.TextStyle.Monospace = true
+	or.Alignment = fyne.TextAlignCenter
+
+	sign_in := widget.NewButton("Sign In", func() {
+		showMainPage(win) // Navigate to the sign-up page
+	})
+
+	content := container.NewVBox(
+		SmallSpacer,
+		AppName,
+		Spacer,
+		emailEntry,
+		nameEntry,
+		PasswordEntry,
+		SmallSpacer,
+		sign_up,
+		SmallSpacer,
+		or,
+		SmallSpacer,
+		sign_in,
+	)
+
 	win.SetContent(content)
 
 }
