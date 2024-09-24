@@ -40,6 +40,23 @@ func InitDB() *pgxpool.Pool {
 		log.Fatalf("Unable to create connection pool: %v\n", err)
 	}
 
+	query := `
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(150) UNIQUE NOT NULL,
+        password VARCHAR(100) NOT NULL
+    );
+    `
+
+	// Execute the query
+	_, err2 := Pool.Exec(context.Background(), query)
+	if err2 != nil {
+		log.Fatalf("Failed to create users table: %v", err2)
+	} else {
+		fmt.Println("Users table created or already exists.")
+	}
+
 	fmt.Println("Connected to PostgreSQL")
 	return Pool
 }
