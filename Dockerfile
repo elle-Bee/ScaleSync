@@ -1,15 +1,13 @@
 FROM golang:latest
 
-# Install necessary packages for OpenGL and X11 support
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-dev \
+    libgl1-mesa-glx \
     xorg-dev \
-    libxcursor-dev \
-    libxi-dev \
-    libxinerama-dev \
-    libxrandr-dev \
+    libxcursor1 \
+    libxi6 \
+    libxinerama1 \
+    libxrandr2 \
     xauth \
-    x11-apps \
     git \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
@@ -22,9 +20,6 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o ScaleSync
-
-
 ENV DISPLAY=:0
 
-CMD ["./ScaleSync"]
+CMD ["go", "run", "main.go"]
