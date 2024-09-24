@@ -145,5 +145,5 @@ import (
 )
 
 func main() {
-	app.UI()
+	app.App()
 }

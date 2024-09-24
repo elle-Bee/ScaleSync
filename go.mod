@@ -3,7 +3,6 @@ module ScaleSync
 go 1.21.1
 
 require (
-	fyne.io/fyne v1.4.3
 	fyne.io/fyne/v2 v2.5.1
 	github.com/gorilla/mux v1.8.1
 	github.com/jackc/pgx/v5 v5.7.1
