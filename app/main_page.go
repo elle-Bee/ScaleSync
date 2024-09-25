@@ -1,14 +1,12 @@
 package app
 
 import (
-	"ScaleSync/pkg/api"
-	"ScaleSync/pkg/database"
 	"ScaleSync/pkg/models"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"image/color"
-	"io"
-	"log"
+	"io/ioutil"
 	"net/http"
 
 	"fyne.io/fyne/v2"
@@ -16,7 +14,6 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"github.com/gorilla/mux"
 )
 
 // Main UI for the app's home page
@@ -33,16 +30,16 @@ func showMainPage(win fyne.Window) {
 	largeSpacer := canvas.NewText(" ", color.White)
 	largeSpacer.TextSize = 40
 
-	// Create input fields for ID and Password
-	IDEntry := widget.NewEntry()
-	IDEntry.SetPlaceHolder("Enter userID")
+	// Create input fields for username and Password
+	nameEntry := widget.NewEntry()
+	nameEntry.SetPlaceHolder("Enter username")
 
-	PasswordEntry := widget.NewPasswordEntry()
-	PasswordEntry.SetPlaceHolder("Enter password")
+	passwordEntry := widget.NewPasswordEntry()
+	passwordEntry.SetPlaceHolder("Enter password")
 
 	// Sign-in button functionality
 	signIn := widget.NewButton("Sign In", func() {
-		loginUser(IDEntry.Text, PasswordEntry.Text, win)
+		loginUser(nameEntry.Text, passwordEntry.Text, win)
 	})
 
 	// Create "OR" divider
@@ -60,8 +57,8 @@ func showMainPage(win fyne.Window) {
 		smallSpacer,
 		appName,
 		largeSpacer,
-		IDEntry,
-		PasswordEntry,
+		nameEntry,
+		passwordEntry,
 		smallSpacer,
 		signIn,
 		smallSpacer,
@@ -74,78 +71,54 @@ func showMainPage(win fyne.Window) {
 	win.SetContent(content)
 }
 
-// Initialize HTTP server for user management and login
-func Login() {
-	database.Pool = database.InitDB() // Initialize the database connection
-	defer database.Pool.Close()
+// Login user function to validate credentials with the server
+func loginUser(username, password string, win fyne.Window) {
+	if username == "" || password == "" {
+		dialog.ShowError(fmt.Errorf("Please enter both username and password"), win)
+		return
+	}
 
-	r := mux.NewRouter()
-
-	// User routes
-	r.HandleFunc("/users", api.CreateUser).Methods("POST")
-	r.HandleFunc("/users", api.GetAllUsers).Methods("GET")
-	r.HandleFunc("/users/{id}", api.GetUser).Methods("GET")
-	r.HandleFunc("/users/{id}", api.UpdateUser).Methods("PATCH")
-	r.HandleFunc("/users/{id}", api.DeleteUser).Methods("DELETE")
-
-	// Login route
-	r.HandleFunc("/login", api.LoginUser).Methods("POST")
-
-	// Start the HTTP server
-	log.Println("Server running at http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
-}
-
-// Fetch and display all users from the server
-func fetchUsers(win fyne.Window) {
-	resp, err := http.Get("http://localhost:8080/users")
+	// Prepare request body
+	user := models.User{
+		Name:     username,
+		Password: password,
+	}
+	jsonData, err := json.Marshal(user)
 	if err != nil {
-		dialog.ShowError(fmt.Errorf("Error fetching users: %v", err), win)
-		return
-	}
-	defer resp.Body.Close()
-
-	// If the response status is OK, process the data
-	if resp.StatusCode == http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		var users []models.User
-		json.Unmarshal(body, &users)
-
-		// Create a string representation of the users
-		userList := ""
-		for _, user := range users {
-			userList += fmt.Sprintf("Name: %s, Email: %s\n", user.Name, user.Email)
-		}
-
-		// Display user information
-		dialog.ShowInformation("Users", userList, win)
-	} else {
-		dialog.ShowError(fmt.Errorf("Could not fetch users: %v", resp.StatusCode), win)
-	}
-}
-
-// Login user function to validate credentials
-func loginUser(userID, password string, win fyne.Window) {
-	if userID == "" || password == "" {
-		dialog.ShowError(fmt.Errorf("Please enter both User ID and Password"), win)
+		dialog.ShowError(fmt.Errorf("Failed to encode user data: %v", err), win)
 		return
 	}
 
-	// You can implement your login logic here, for example:
-	resp, err := http.PostForm("http://localhost:8080/login", map[string][]string{
-		"userID":   {userID},
-		"password": {password},
-	})
-
+	// Make a POST request to the login endpoint
+	resp, err := http.Post("http://localhost:8080/login", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		dialog.ShowError(fmt.Errorf("Error logging in: %v", err), win)
 		return
 	}
 	defer resp.Body.Close()
 
+	// Handle response from the server
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		dialog.ShowError(fmt.Errorf("Error reading response: %v", err), win)
+		return
+	}
+
+	// If the response status is OK, proceed to the next step
 	if resp.StatusCode == http.StatusOK {
-		// Login successful, proceed to next page or show success
+		var userLog models.User_login
+		err = json.Unmarshal(body, &userLog)
+		if err != nil {
+			dialog.ShowError(fmt.Errorf("Error decoding response: %v", err), win)
+			return
+		}
+		// Login successful
 		dialog.ShowInformation("Login Success", "You have successfully logged in.", win)
+		fmt.Printf("Logged in user: %+v\n", userLog)
+
+		// Proceed to next page or dashboard
+		// showDashboardPage(win) // You can implement this to navigate to the dashboard
+
 	} else {
 		dialog.ShowError(fmt.Errorf("Invalid login credentials"), win)
 	}

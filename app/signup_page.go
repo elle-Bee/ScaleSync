@@ -9,26 +9,67 @@ import (
 	"log"
 	"net/http"
 
-	"fyne.io/fyne/dialog"
-	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2" // Make sure to import the correct version
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog" // Correct import for dialog
 	"fyne.io/fyne/v2/widget"
 )
 
+// Function to create a new user
+func createUser(name, email, password string, win fyne.Window) {
+	// Prepare user data to send in POST request
+	userData := models.User{
+		Name:     name,
+		Email:    email,
+		Password: password,
+	}
+
+	// Serialize user data into JSON format
+	jsonData, err := json.Marshal(userData)
+	if err != nil {
+		dialog.ShowError(fmt.Errorf("Error serializing user data: %v", err), win)
+		return
+	}
+
+	// Send POST request to create a user
+	resp, err := http.Post("http://localhost:8080/users", "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		dialog.ShowError(fmt.Errorf("Network error: %v", err), win)
+		return
+	}
+	defer resp.Body.Close() // Ensure response body is closed to prevent resource leaks
+
+	// Check response status code
+	switch resp.StatusCode {
+	case http.StatusOK:
+		dialog.ShowInformation("Success", "User created successfully", win)
+	case http.StatusBadRequest:
+		dialog.ShowError(fmt.Errorf("Bad request: invalid user data"), win)
+	case http.StatusConflict:
+		dialog.ShowError(fmt.Errorf("User already exists"), win)
+	case http.StatusInternalServerError:
+		dialog.ShowError(fmt.Errorf("Server error: please try again later"), win)
+	default:
+		dialog.ShowError(fmt.Errorf("Failed to create user, status code: %d", resp.StatusCode), win)
+	}
+}
+
+// ShowSignUpPage displays the sign-up interface
 func showSignUpPage(win fyne.Window) {
 	log.Println("Sign Up Tapped!")
 
-	SmallSpacer := canvas.NewText(" ", color.White)
-	SmallSpacer.TextSize = 15
+	// UI Components
+	smallSpacer := canvas.NewText(" ", color.White)
+	smallSpacer.TextSize = 15
 
-	AppName := canvas.NewText("ScaleSync", color.White)
-	AppName.TextSize = 45
-	AppName.TextStyle.Bold = true
-	AppName.Alignment = fyne.TextAlignCenter
+	appName := canvas.NewText("ScaleSync", color.White)
+	appName.TextSize = 45
+	appName.TextStyle.Bold = true
+	appName.Alignment = fyne.TextAlignCenter
 
-	Spacer := canvas.NewText(" ", color.White)
-	Spacer.TextSize = 40
+	largeSpacer := canvas.NewText(" ", color.White)
+	largeSpacer.TextSize = 40
 
 	emailEntry := widget.NewEntry()
 	emailEntry.SetPlaceHolder("Enter Email")
@@ -36,59 +77,38 @@ func showSignUpPage(win fyne.Window) {
 	nameEntry := widget.NewEntry()
 	nameEntry.SetPlaceHolder("Enter Full Name")
 
-	PasswordEntry := widget.NewPasswordEntry()
-	PasswordEntry.SetPlaceHolder("Enter password")
+	passwordEntry := widget.NewPasswordEntry()
+	passwordEntry.SetPlaceHolder("Enter Password")
 
-	sign_up := widget.NewButton("Sign Up", func() {
+	signUpButton := widget.NewButton("Sign Up", func() {
 		log.Println("Create User")
-		createUser(nameEntry.Text, emailEntry.Text, PasswordEntry.Text)
+		createUser(nameEntry.Text, emailEntry.Text, passwordEntry.Text, win)
 	})
 
 	or := canvas.NewText("----------------- OR -----------------", color.White)
 	or.TextStyle.Monospace = true
 	or.Alignment = fyne.TextAlignCenter
 
-	sign_in := widget.NewButton("Sign In", func() {
-		showMainPage(win) // Navigate to the sign-up page
+	signInButton := widget.NewButton("Sign In", func() {
+		showMainPage(win) // Navigate to the sign-in page
 	})
 
+	// Set content layout
 	content := container.NewVBox(
-		SmallSpacer,
-		AppName,
-		Spacer,
+		smallSpacer,
+		appName,
+		largeSpacer,
 		emailEntry,
 		nameEntry,
-		PasswordEntry,
-		SmallSpacer,
-		sign_up,
-		SmallSpacer,
+		passwordEntry,
+		smallSpacer,
+		signUpButton,
+		smallSpacer,
 		or,
-		SmallSpacer,
-		sign_in,
+		smallSpacer,
+		signInButton,
 	)
 
+	// Set content as the content of the window
 	win.SetContent(content)
-
-}
-
-func createUser(name, email, password string) {
-	userData := models.User{
-		Name:     name,
-		Email:    email,
-		Password: password,
-	}
-	jsonData, _ := json.Marshal(userData)
-
-	resp, err := http.Post("http://localhost:8080/users", "application/json", bytes.NewBuffer(jsonData))
-	if err != nil {
-		dialog.ShowError(err, nil)
-		return
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusOK {
-		dialog.ShowInformation("Success", "User created successfully", nil)
-	} else {
-		dialog.ShowError(fmt.Errorf("Failed to create user"), nil)
-	}
 }

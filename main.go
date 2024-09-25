@@ -1,55 +1,40 @@
-// package main
-
-// import (
-// 	"ScaleSync/pkg/models"
-// 	"bytes"
-// 	"encoding/json"
-// 	"fmt"
-// 	"io"
-// 	"log"
-// 	"net/http"
-// 	"sync"
-
-// 	"ScaleSync/pkg/api"
-// 	"ScaleSync/pkg/database"
-
-// 	"fyne.io/fyne/v2/app"
-// 	"fyne.io/fyne/v2/container"
-// 	"fyne.io/fyne/v2/dialog"
-// 	"fyne.io/fyne/v2/widget"
-// 	"github.com/gorilla/mux"
-// 	"github.com/joho/godotenv"
-// )
-
-// func init() {
-// 	err := godotenv.Load()
-// 	if err != nil {
-// 		log.Fatal("Error loading .env file")
-// 	}
-// }
-
-// func main() {
-// 	var wg sync.WaitGroup
-// 	wg.Add(1)
-
-// 	// Start the HTTP server in a goroutine
-// 	go func() {
-// 		defer wg.Done()
-// 		Login() // Start the server
-// 	}()
-
-// 	// Start the GUI in the main goroutine
-// 	startGUI()
-
-// 	wg.Wait()
-// }
-
 package main
 
 import (
 	"ScaleSync/app"
+	"ScaleSync/pkg/api"
+	"ScaleSync/pkg/database"
+	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
+	// Initialize the database connection
+	database.Pool = database.InitDB()
+	defer database.Pool.Close() // Ensure the connection pool closes when the program exits
+
+	// Start the HTTP server
+	go startServer()
+
+	// Start the app (e.g., GUI or other application logic)
 	app.App()
+}
+
+func startServer() {
+	r := mux.NewRouter()
+
+	// User routes
+	r.HandleFunc("/users", api.CreateUser).Methods("POST")
+	r.HandleFunc("/users", api.GetAllUsers).Methods("GET")
+	r.HandleFunc("/users/{id}", api.GetUser).Methods("GET")
+	r.HandleFunc("/users/{id}", api.UpdateUser).Methods("PATCH")
+	r.HandleFunc("/users/{id}", api.DeleteUser).Methods("DELETE")
+
+	// Login route
+	r.HandleFunc("/login", api.LoginUser).Methods("POST")
+
+	log.Println("Server running at http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
