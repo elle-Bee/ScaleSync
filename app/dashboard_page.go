@@ -7,17 +7,36 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+// Function to create the home page content
+func showHomePage() fyne.CanvasObject {
+	return container.NewVBox(
+		widget.NewLabel("Home Page"),
+		// Add more home-related widgets here
+	)
+}
+
 func ShowDashboardPage(win fyne.Window) {
 	win.Resize(fyne.NewSize(800, 550))
+	// Initial content area
+	contentArea := container.NewVBox(showHomePage()) // Start with home page
 
-	tabs := container.NewAppTabs(
-		container.NewTabItemWithIcon("Home", theme.HomeIcon(), widget.NewLabel("Home tab")),
-		container.NewTabItemWithIcon("Profile", theme.AccountIcon(), widget.NewLabel("Profile")),
+	// Create sidebar with navigation options
+	sidebar := container.NewVBox(
+		widget.NewButtonWithIcon("Home", theme.HomeIcon(), func() {
+			contentArea.RemoveAll()
+			contentArea.Add(showHomePage())
+			contentArea.Refresh()
+		}),
+		widget.NewButtonWithIcon("Profile", theme.AccountIcon(), func() {
+			contentArea.RemoveAll()
+			contentArea.Add(ShowProfilePage())
+			contentArea.Refresh()
+		}),
 	)
 
-	tabs.SetTabLocation(container.TabLocationLeading)
+	// Create a layout that combines the sidebar and content area
+	mainLayout := container.NewHBox(sidebar, contentArea)
 
-	win.SetContent(tabs)
-
-	win.SetContent(tabs)
+	// Set the content of the window
+	win.SetContent(mainLayout)
 }
