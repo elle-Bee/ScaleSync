@@ -117,7 +117,7 @@ func loginUser(username, password string, win fyne.Window) {
 		fmt.Printf("Logged in user: %+v\n", userLog)
 
 		// Proceed to next page or dashboard
-		// showDashboardPage(win) // You can implement this to navigate to the dashboard
+		ShowDashboardPage(win)
 
 	} else {
 		dialog.ShowError(fmt.Errorf("Invalid login credentials"), win)
