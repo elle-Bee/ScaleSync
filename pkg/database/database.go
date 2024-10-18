@@ -48,6 +48,14 @@ func InitDB() *pgxpool.Pool {
         password VARCHAR(100) NOT NULL
     );
     `
+	query2 := `
+	CREATE TABLE IF NOT EXISTS warehouses (
+    	warehouse_id INT PRIMARY KEY,
+    	location VARCHAR(255) NOT NULL,
+    	current_capacity INT NOT NULL,
+    	total_capacity INT NOT NULL
+	);
+	`
 
 	// Execute the query
 	_, err2 := Pool.Exec(context.Background(), query)
@@ -55,6 +63,13 @@ func InitDB() *pgxpool.Pool {
 		log.Fatalf("Failed to create users table: %v", err2)
 	} else {
 		fmt.Println("Users table created or already exists.")
+	}
+
+	_, err3 := Pool.Exec(context.Background(), query2)
+	if err3 != nil {
+		log.Fatalf("Failed to create warehouse table: %v", err2)
+	} else {
+		fmt.Println("warehouse table created or already exists.")
 	}
 
 	fmt.Println("Connected to PostgreSQL")

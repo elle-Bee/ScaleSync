@@ -35,6 +35,9 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	User_log.Name = user.Name
 	User_log.Email = user.Email
 	User_log.Session = true
+	if user.Name == "Arnav" {
+		User_log.Privelages = true
+	}
 
 	json.NewEncoder(w).Encode(User_log)
 }

@@ -12,4 +12,5 @@ type User_login struct {
 	Name    string `json:"name"`
 	Email   string `json:"email"`
 	Session bool
+	Privelages bool
 }

@@ -24,6 +24,11 @@ func Login() {
 	r.HandleFunc("/users/{id}", api.DeleteUser).Methods("DELETE")
 
 	r.HandleFunc("/login", api.LoginUser).Methods("POST")
+	r.HandleFunc("/warehouse", api.CreateWarehouse).Methods("POST")
+	r.HandleFunc("/warehouse", api.GetAllWarehouses).Methods("GET")
+	r.HandleFunc("/warehouse/{id}", api.GetWarehouse).Methods("GET")
+	r.HandleFunc("/warehouse/{id}", api.UpdateWarehouse).Methods("PUT")
+	r.HandleFunc("/warehouse/{id}", api.DeleteWarehouse).Methods("DELETE")
 
 	log.Println("Server running at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
