@@ -13,15 +13,14 @@ import (
 )
 
 func ShowProfilePage(win fyne.Window, userLogin models.User_login) fyne.CanvasObject {
-	title := widget.NewLabel("Profile")
 
 	// Display the user's name
-	userName := canvas.NewText("Hello "+userLogin.Name+" !", color.White)
+	userName := canvas.NewText(" Hello "+userLogin.Name+" !", color.White)
 	userName.TextSize = 30
 	userName.TextStyle.Bold = true
 
 	// Display the user's email
-	userEmail := canvas.NewText("Email: "+userLogin.Email, color.White)
+	userEmail := canvas.NewText("   Email: "+userLogin.Email, color.White)
 	userEmail.TextSize = 15
 
 	LargeSpacer := canvas.NewText(" ", color.White)
@@ -34,7 +33,6 @@ func ShowProfilePage(win fyne.Window, userLogin models.User_login) fyne.CanvasOb
 
 	// Layout the profile components
 	return container.NewVBox(
-		title,
 		userName,
 		userEmail,
 		LargeSpacer,
