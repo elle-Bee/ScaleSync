@@ -2,7 +2,9 @@ package api
 
 import (
 	"context"
+	sql "database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -51,6 +53,23 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(user)
+}
+
+func GetLoggedInUser(name string) (models.User_login, error) {
+	var user models.User_login
+	query := `SELECT id, name, email FROM users WHERE name = $1`
+
+	// Use QueryRow to get a single row
+	err := database.Pool.QueryRow(context.Background(), query, name).Scan(&user.ID, &user.Name, &user.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return user, errors.New("user not found")
+		}
+		return user, err
+	}
+
+	user.Session = true // Assume session is active
+	return user, nil
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {

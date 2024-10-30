@@ -1,13 +1,15 @@
 package app
 
 import (
+	"ScaleSync/pkg/models"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
-func ShowDashboardPage(win fyne.Window) {
+func ShowDashboardPage(win fyne.Window, userLogin models.User_login) {
 	win.Resize(fyne.NewSize(800, 550))
 	// Initial content area
 	contentArea := container.NewVBox(ShowHomePage()) // Starts at home page
@@ -21,7 +23,7 @@ func ShowDashboardPage(win fyne.Window) {
 		}),
 		widget.NewButtonWithIcon("Profile", theme.AccountIcon(), func() {
 			contentArea.RemoveAll()
-			contentArea.Add(ShowProfilePage())
+			contentArea.Add(ShowProfilePage(userLogin))
 			contentArea.Refresh()
 		}),
 	)

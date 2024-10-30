@@ -106,18 +106,18 @@ func loginUser(username, password string, win fyne.Window) {
 
 	// If the response status is OK, proceed to the next step
 	if resp.StatusCode == http.StatusOK {
-		var userLog models.User_login
-		err = json.Unmarshal(body, &userLog)
+		var userLogin models.User_login
+		err = json.Unmarshal(body, &userLogin)
 		if err != nil {
 			dialog.ShowError(fmt.Errorf("error decoding response: %v", err), win)
 			return
 		}
 		// Login successful
 		dialog.ShowInformation("Login Success", "You have successfully logged in.", win)
-		fmt.Printf("Logged in user: %+v\n", userLog)
+		fmt.Printf("Logged in user: %+v\n", userLogin)
 
 		// Proceed to next page or dashboard
-		ShowDashboardPage(win)
+		ShowDashboardPage(win, userLogin)
 
 	} else {
 		dialog.ShowError(fmt.Errorf("invalid login credentials"), win)

@@ -44,10 +44,10 @@ func createUser(name, email, password string, win fyne.Window) {
 	switch resp.StatusCode {
 	case http.StatusOK:
 		dialog.ShowInformation("Success", "User created successfully you are now being logged in", win)
-		var userLog models.User_login
-		fmt.Printf("Logged in user: %+v\n", userLog)
+		var userLogin models.User_login
+		fmt.Printf("Logged in user: %+v\n", userLogin)
 		// Proceed to next page or dashboard
-		ShowDashboardPage(win)
+		ShowDashboardPage(win, userLogin)
 	case http.StatusBadRequest:
 		dialog.ShowError(fmt.Errorf("bad request: invalid user data"), win)
 	case http.StatusConflict:
