@@ -1,3 +1,8 @@
+-- Create tables for the models (if they do not exist)
+DROP TABLE IF EXISTS items;
+DROP TABLE IF EXISTS warehouses;
+DROP TABLE IF EXISTS users;
+
 -- Create users table
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -6,7 +11,7 @@ CREATE TABLE users (
     password TEXT NOT NULL
 );
 
-CREATE TABLE Items (
+CREATE TABLE items (
     item_id INT PRIMARY KEY,
     name VARCHAR(255),
     category VARCHAR(255),
@@ -16,7 +21,7 @@ CREATE TABLE Items (
     total_price DECIMAL(10, 2)
 );
 
-CREATE TABLE Warehouses (
+CREATE TABLE warehouses (
     warehouse_id INT PRIMARY KEY,
     location VARCHAR(255),
     current_capacity INT,
@@ -94,10 +99,10 @@ INSERT INTO Warehouses (warehouse_id, location, current_capacity, total_capacity
 (3, 'Warehouse 3', 60, 200, 3),
 (4, 'Warehouse 4', 80, 250, 4),
 (5, 'Warehouse 5', 100, 300, 5),
-(6, 'Warehouse 6', 90, 350, 6),
-(7, 'Warehouse 7', 70, 400, 7),
-(8, 'Warehouse 8', 30, 250, 8),
-(9, 'Warehouse 9', 150, 450, 9),
-(10, 'Warehouse 10', 200, 500, 10);
+(6, 'Warehouse 6', 90, 350, 1),
+(7, 'Warehouse 7', 70, 400, 2),
+(8, 'Warehouse 8', 30, 250, 3),
+(9, 'Warehouse 9', 150, 450, 4),
+(10, 'Warehouse 10', 200, 500, 5);
 
 --psql -U postgres -d scalesync -f ./usertable.sql
