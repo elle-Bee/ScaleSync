@@ -3,7 +3,6 @@ package app
 import (
 	"ScaleSync/pkg/models"
 	"ScaleSync/pkg/repository"
-	"fmt"
 	"image/color"
 	"log"
 
@@ -15,7 +14,15 @@ import (
 
 func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *repository.WarehouseRepository) fyne.CanvasObject {
 
-	text := canvas.NewText("Select the warehouses within your jurisdiction for which you would like to view the data of :", color.White)
+	Spacer := canvas.NewText(" ", color.White)
+	Spacer.TextSize = 10
+
+	smallSpacer := canvas.NewText(" ", color.White)
+	smallSpacer.TextSize = 5
+
+	text := canvas.NewText("   Select the warehouse(s) within your jurisdiction for which you would like to view the data of :", color.White)
+	text.TextSize = 15
+	text.TextStyle.Bold = true
 
 	warehouses, err := warehouseRepo.GetWarehousesByAdminID(userLogin.ID)
 	if err != nil {
@@ -35,13 +42,15 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 			}
 		})
 		// Customize checkbox label with more warehouse info if needed
-		warehouseCheck.SetText(warehouse.Location + " - Capacity: " + fmt.Sprintf("%d/%d", warehouse.CurrentCapacity, warehouse.TotalCapacity))
+		warehouseCheck.SetText(warehouse.Location)
 		warehouseContainer.Add(warehouseCheck)
 	}
 
 	// Layout the profile components
 	return container.NewVBox(
+		Spacer,
 		text,
+		smallSpacer,
 		warehouseContainer,
 	)
 }

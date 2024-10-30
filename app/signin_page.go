@@ -18,18 +18,25 @@ import (
 
 // Main UI for the app's home page
 func ShowSignInPage(win fyne.Window) {
-	win.Resize(fyne.NewSize(400, 550))
+	win.Resize(fyne.NewSize(400, 580))
 	// Define components
 	SmallSpacer := canvas.NewText(" ", color.White)
 	SmallSpacer.TextSize = 15
+
+	minSpacer := canvas.NewText(" ", color.White)
+	minSpacer.TextSize = 5
 
 	appName := canvas.NewText("ScaleSync", color.White)
 	appName.TextSize = 45
 	appName.TextStyle.Bold = true
 	appName.Alignment = fyne.TextAlignCenter
 
+	caption := canvas.NewText("A scalable Inventory management system", color.White)
+	caption.TextSize = 15
+	caption.Alignment = fyne.TextAlignCenter
+
 	LargeSpacer := canvas.NewText(" ", color.White)
-	LargeSpacer.TextSize = 40
+	LargeSpacer.TextSize = 30
 
 	// Create input fields for username and Password
 	nameEntry := widget.NewEntry()
@@ -57,6 +64,8 @@ func ShowSignInPage(win fyne.Window) {
 	content := container.NewVBox(
 		SmallSpacer,
 		appName,
+		minSpacer,
+		caption,
 		LargeSpacer,
 		nameEntry,
 		passwordEntry,
