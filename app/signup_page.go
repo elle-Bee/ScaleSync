@@ -28,14 +28,14 @@ func createUser(name, email, password string, win fyne.Window) {
 	// Serialize user data into JSON format
 	jsonData, err := json.Marshal(userData)
 	if err != nil {
-		dialog.ShowError(fmt.Errorf("Error serializing user data: %v", err), win)
+		dialog.ShowError(fmt.Errorf("error serializing user data: %v", err), win)
 		return
 	}
 
 	// Send POST request to create a user
 	resp, err := http.Post("http://localhost:8080/users", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		dialog.ShowError(fmt.Errorf("Network error: %v", err), win)
+		dialog.ShowError(fmt.Errorf("network error: %v", err), win)
 		return
 	}
 	defer resp.Body.Close() // Ensure response body is closed to prevent resource leaks
@@ -48,15 +48,14 @@ func createUser(name, email, password string, win fyne.Window) {
 		fmt.Printf("Logged in user: %+v\n", userLog)
 		// Proceed to next page or dashboard
 		ShowDashboardPage(win)
-
 	case http.StatusBadRequest:
-		dialog.ShowError(fmt.Errorf("Bad request: invalid user data"), win)
+		dialog.ShowError(fmt.Errorf("bad request: invalid user data"), win)
 	case http.StatusConflict:
-		dialog.ShowError(fmt.Errorf("User already exists"), win)
+		dialog.ShowError(fmt.Errorf("user already exists"), win)
 	case http.StatusInternalServerError:
-		dialog.ShowError(fmt.Errorf("Server error: please try again later"), win)
+		dialog.ShowError(fmt.Errorf("server error: please try again later"), win)
 	default:
-		dialog.ShowError(fmt.Errorf("Failed to create user, status code: %d", resp.StatusCode), win)
+		dialog.ShowError(fmt.Errorf("failed to create user, status code: %d", resp.StatusCode), win)
 	}
 }
 

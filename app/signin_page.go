@@ -74,7 +74,7 @@ func showMainPage(win fyne.Window) {
 // Login user function to validate credentials with the server
 func loginUser(username, password string, win fyne.Window) {
 	if username == "" || password == "" {
-		dialog.ShowError(fmt.Errorf("Please enter both username and password"), win)
+		dialog.ShowError(fmt.Errorf("please enter both username and password"), win)
 		return
 	}
 
@@ -85,14 +85,14 @@ func loginUser(username, password string, win fyne.Window) {
 	}
 	jsonData, err := json.Marshal(user)
 	if err != nil {
-		dialog.ShowError(fmt.Errorf("Failed to encode user data: %v", err), win)
+		dialog.ShowError(fmt.Errorf("failed to encode user data: %v", err), win)
 		return
 	}
 
 	// Make a POST request to the login endpoint
 	resp, err := http.Post("http://localhost:8080/login", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		dialog.ShowError(fmt.Errorf("Error logging in: %v", err), win)
+		dialog.ShowError(fmt.Errorf("error logging in: %v", err), win)
 		return
 	}
 	defer resp.Body.Close()
@@ -100,7 +100,7 @@ func loginUser(username, password string, win fyne.Window) {
 	// Handle response from the server
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		dialog.ShowError(fmt.Errorf("Error reading response: %v", err), win)
+		dialog.ShowError(fmt.Errorf("error reading response: %v", err), win)
 		return
 	}
 
@@ -109,7 +109,7 @@ func loginUser(username, password string, win fyne.Window) {
 		var userLog models.User_login
 		err = json.Unmarshal(body, &userLog)
 		if err != nil {
-			dialog.ShowError(fmt.Errorf("Error decoding response: %v", err), win)
+			dialog.ShowError(fmt.Errorf("error decoding response: %v", err), win)
 			return
 		}
 		// Login successful
@@ -120,6 +120,6 @@ func loginUser(username, password string, win fyne.Window) {
 		ShowDashboardPage(win)
 
 	} else {
-		dialog.ShowError(fmt.Errorf("Invalid login credentials"), win)
+		dialog.ShowError(fmt.Errorf("invalid login credentials"), win)
 	}
 }
