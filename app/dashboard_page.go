@@ -1,6 +1,7 @@
 package app
 
 import (
+	"ScaleSync/pkg/database"
 	"ScaleSync/pkg/models"
 	"ScaleSync/pkg/repository"
 
@@ -13,7 +14,7 @@ import (
 func ShowDashboardPage(win fyne.Window, userLogin models.User_login) {
 	win.Resize(fyne.NewSize(800, 550))
 
-	warehouseRepo := &repository.WarehouseRepository{DB: database}
+	warehouseRepo := &repository.WarehouseRepository{DB: database.InitDB()}
 
 	// Initial content area
 	contentArea := container.NewVBox(ShowHomePage(win, userLogin, warehouseRepo)) // Starts at home page

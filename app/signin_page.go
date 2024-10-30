@@ -114,6 +114,7 @@ func loginUser(username, password string, win fyne.Window) {
 			return
 		}
 		// Login successful
+		fmt.Printf("Raw response body: %s\n", string(body))
 		dialog.ShowInformation("Login Success", "You have successfully logged in.", win)
 		fmt.Printf("Logged in user: %+v\n", userLogin)
 
