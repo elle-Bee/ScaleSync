@@ -13,8 +13,8 @@ import (
 
 func main() {
 	// Initialize the database connection
-	database.Pool = database.InitDB()
-	defer database.Pool.Close() // Ensure the connection pool closes when the program exits
+	database := database.InitDB()
+	defer database.Close() // Ensure the connection pool closes when the program exits
 
 	// Start the HTTP server
 	go startServer()

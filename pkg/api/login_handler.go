@@ -16,9 +16,9 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	name := user.Name
 	password := user.Password
 
-	query := `Select name, email, password FROM users WHERE name = ` + `'` + name + `'`
+	query := `Select id, name, email, password FROM users WHERE name = ` + `'` + name + `'`
 	fmt.Println(query)
-	err := database.Pool.QueryRow(context.Background(), query).Scan(&user.Name, &user.Email, &user.Password)
+	err := database.Pool.QueryRow(context.Background(), query).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
 
 	if err != nil {
 		http.Error(w, "Username or Password is wrong", http.StatusNotFound)

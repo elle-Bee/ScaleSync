@@ -2,6 +2,7 @@ package app
 
 import (
 	"ScaleSync/pkg/models"
+	"log"
 
 	"image/color"
 
@@ -18,6 +19,8 @@ func ShowProfilePage(win fyne.Window, userLogin models.User_login) fyne.CanvasOb
 	userName := canvas.NewText(" Hello "+userLogin.Name+" !", color.White)
 	userName.TextSize = 30
 	userName.TextStyle.Bold = true
+
+	log.Printf("Fetching for admin ID: %d", userLogin.ID)
 
 	// Display the user's email
 	userEmail := canvas.NewText("   Email: "+userLogin.Email, color.White)

@@ -90,11 +90,15 @@ func (r *WarehouseRepository) GetByID(id int) (*models.Warehouse, error) {
 	return &warehouse, nil
 }
 
-// Get warehouses by admin ID
+// Get warehouses by admin Name
 func (r *WarehouseRepository) GetWarehousesByAdminID(adminID int) ([]models.Warehouse, error) {
 	var warehouses []models.Warehouse
 
-	rows, err := r.DB.Query(context.Background(), `SELECT warehouse_id, location, current_capacity, total_capacity FROM warehouses WHERE admin_id = $1`, adminID)
+	rows, err := r.DB.Query(context.Background(), `
+		SELECT warehouse_id, location, current_capacity, total_capacity 
+		FROM warehouses 
+		WHERE admin_id = (SELECT id FROM users WHERE id = $1)
+	`, adminID)
 	if err != nil {
 		return nil, err
 	}
@@ -106,6 +110,10 @@ func (r *WarehouseRepository) GetWarehousesByAdminID(adminID int) ([]models.Ware
 			return nil, err
 		}
 		warehouses = append(warehouses, warehouse)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return warehouses, nil

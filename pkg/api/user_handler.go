@@ -2,17 +2,18 @@ package api
 
 import (
 	"context"
-	sql "database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"ScaleSync/pkg/database"
 	"ScaleSync/pkg/models"
 
 	"github.com/gorilla/mux"
+	"github.com/jackc/pgx/v5"
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -42,19 +43,64 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+	idStr := mux.Vars(r)["id"]
+
+	// Convert the ID from string to int
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
 
 	var user models.User
 	query := `SELECT id, name, email FROM users WHERE id = $1`
-	err := database.Pool.QueryRow(context.Background(), query, id).Scan(&user.ID, &user.Name, &user.Email)
+
+	// Execute the query and scan the result into the user struct
+	err = database.Pool.QueryRow(context.Background(), query, id).Scan(&user.ID, &user.Name, &user.Email)
 	if err != nil {
+		// Log the error for debugging
+		log.Printf("Error fetching user with ID %d: %v", id, err)
 		http.Error(w, "User not found", http.StatusNotFound)
 		return
 	}
 
-	json.NewEncoder(w).Encode(user)
+	// Set content type to application/json
+	w.Header().Set("Content-Type", "application/json")
+
+	// Return the user as a JSON response
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		log.Printf("Error encoding user to JSON: %v", err)
+		http.Error(w, "Failed to encode user data", http.StatusInternalServerError)
+	}
 }
 
+func GetLoggedInUserHandler(w http.ResponseWriter, r *http.Request) {
+
+	name := r.URL.Query().Get("name")
+	if name == "" {
+		http.Error(w, "Name parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	user, err := GetLoggedInUser(name)
+	if err != nil {
+		// Log the error for debugging
+		log.Printf("Error fetching user with name %s: %v", name, err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	// Set content type to application/json
+	w.Header().Set("Content-Type", "application/json")
+
+	// Return the user as a JSON response
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		log.Printf("Error encoding user to JSON: %v", err)
+		http.Error(w, "Failed to encode user data", http.StatusInternalServerError)
+	}
+}
+
+// GetLoggedInUser retrieves the user based on the provided name
 func GetLoggedInUser(name string) (models.User_login, error) {
 	var user models.User_login
 	query := `SELECT id, name, email FROM users WHERE name = $1`
@@ -62,13 +108,13 @@ func GetLoggedInUser(name string) (models.User_login, error) {
 	// Use QueryRow to get a single row
 	err := database.Pool.QueryRow(context.Background(), query, name).Scan(&user.ID, &user.Name, &user.Email)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			return user, errors.New("user not found")
 		}
 		return user, err
 	}
 
-	user.Session = true // Assume session is active
+	user.Session = true // Assuming session is active
 	return user, nil
 }
 
