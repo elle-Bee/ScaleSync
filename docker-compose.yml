@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: amity
+      POSTGRES_DB: go_crud
+    ports:
+      - "5432:5432"  # Expose PostgreSQL on the default port
+    networks:
+      - go-post
+
+  go-app:
+    build: .
+    ports:
+      - "5000:8080"  # Expose Go app on port 5000 (maps to Go's 8080)
+    environment:
+      DB_HOST: postgres  # Connect to the 'postgres' service
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: amity
+      DB_NAME: go_crud
+    depends_on:
+      - postgres
+    networks:
+      - go-post
+
+networks:
+  go-post:
+    driver: bridge
