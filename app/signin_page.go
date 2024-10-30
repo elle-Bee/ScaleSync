@@ -20,16 +20,16 @@ import (
 func ShowSignInPage(win fyne.Window) {
 	win.Resize(fyne.NewSize(400, 550))
 	// Define components
-	smallSpacer := canvas.NewText(" ", color.White)
-	smallSpacer.TextSize = 15
+	SmallSpacer := canvas.NewText(" ", color.White)
+	SmallSpacer.TextSize = 15
 
 	appName := canvas.NewText("ScaleSync", color.White)
 	appName.TextSize = 45
 	appName.TextStyle.Bold = true
 	appName.Alignment = fyne.TextAlignCenter
 
-	largeSpacer := canvas.NewText(" ", color.White)
-	largeSpacer.TextSize = 40
+	LargeSpacer := canvas.NewText(" ", color.White)
+	LargeSpacer.TextSize = 40
 
 	// Create input fields for username and Password
 	nameEntry := widget.NewEntry()
@@ -55,16 +55,16 @@ func ShowSignInPage(win fyne.Window) {
 
 	// content layout
 	content := container.NewVBox(
-		smallSpacer,
+		SmallSpacer,
 		appName,
-		largeSpacer,
+		LargeSpacer,
 		nameEntry,
 		passwordEntry,
-		smallSpacer,
+		SmallSpacer,
 		signIn,
-		smallSpacer,
+		SmallSpacer,
 		or,
-		smallSpacer,
+		SmallSpacer,
 		signUp,
 	)
 
