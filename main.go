@@ -6,6 +6,7 @@ import (
 	"ScaleSync/pkg/database"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -19,6 +20,7 @@ func main() {
 	go startServer()
 
 	// Start the app (e.g., GUI or other application logic)
+	os.Setenv("FYNE_THEME", "dark")
 	app.App()
 }
 
