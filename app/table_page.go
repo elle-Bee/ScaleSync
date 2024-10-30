@@ -2,31 +2,30 @@ package app
 
 import (
 	"ScaleSync/pkg/models"
-	"image/color"
+	"ScaleSync/pkg/repository"
+	"log"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
 
-func ShowTablePage(win fyne.Window, userLogin models.User_login) fyne.CanvasObject {
+func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *repository.WarehouseRepository) fyne.CanvasObject {
+	warehouses, err := repository.WarehouseRepository.GetWarehousesByAdminID(userLogin.ID)
+	if err != nil {
+		log.Println("Error fetching warehouses:", err)
+		return widget.NewLabel("Error fetching warehouses") // Return an error message
+	}
 
-	text := canvas.NewText("Select the warehouses within your jurisdiction for which you would like to view the data of :", color.White)
-	// Display the user's email
-	userEmail := canvas.NewText("Email: "+userLogin.Email, color.White)
-	userEmail.TextSize = 15
+	var checkboxes []fyne.CanvasObject
+	for _, warehouse := range warehouses {
+		// Creates a checkbox for each warehouse
+		check := widget.NewCheck(warehouse.Location, func(value bool) {
+			log.Printf("Checkbox for %s set to %v\n", warehouse.Location, value)
+		})
+		checkboxes = append(checkboxes, check)
+	}
 
-	logoutButton := widget.NewButton("Log Out", func() {
-		userLogin = models.User_login{} // Clear user information
-		logout(win)
-	})
-
-	// Layout the profile components
-	return container.NewVBox(
-		title,
-		userName,
-		userEmail,
-		logoutButton,
-	)
+	// Return a VBox containing the widgets
+	return container.NewVBox(checkboxes...)
 }
