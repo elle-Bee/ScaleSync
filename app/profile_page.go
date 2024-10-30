@@ -8,28 +8,37 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 )
 
-func ShowProfilePage(userLogin models.User_login) fyne.CanvasObject {
-	title := widget.NewLabel("Profile Page")
-	title.Alignment = fyne.TextAlignCenter
+func ShowProfilePage(win fyne.Window, userLogin models.User_login) fyne.CanvasObject {
+	title := widget.NewLabel("Profile")
 
 	// Display the user's name
-	userName := canvas.NewText(userLogin.Name, color.White)
+	userName := canvas.NewText("Hello "+userLogin.Name+" !", color.White)
 	userName.TextSize = 30
 	userName.TextStyle.Bold = true
-	userName.Alignment = fyne.TextAlignCenter
 
 	// Display the user's email
-	userEmail := canvas.NewText(userLogin.Email, color.White)
-	userEmail.TextSize = 20
-	userEmail.Alignment = fyne.TextAlignCenter
+	userEmail := canvas.NewText("Email: "+userLogin.Email, color.White)
+	userEmail.TextSize = 15
+
+	logoutButton := widget.NewButton("Log Out", func() {
+		userLogin = models.User_login{} // Clear user information
+		logout(win)
+	})
 
 	// Layout the profile components
 	return container.NewVBox(
 		title,
 		userName,
 		userEmail,
+		logoutButton,
 	)
+}
+
+func logout(win fyne.Window) {
+	dialog.ShowInformation("Logout", "You have been logged out successfully.", win)
+	ShowSignInPage(win)
 }
