@@ -23,7 +23,7 @@ func ShowDashboardPage(win fyne.Window, userLogin models.User_login) {
 		}),
 		widget.NewButtonWithIcon("Profile", theme.AccountIcon(), func() {
 			contentArea.RemoveAll()
-			contentArea.Add(ShowProfilePage(userLogin))
+			contentArea.Add(ShowProfilePage(win, userLogin))
 			contentArea.Refresh()
 		}),
 	)

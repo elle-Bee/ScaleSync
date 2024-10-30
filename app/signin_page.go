@@ -17,7 +17,8 @@ import (
 )
 
 // Main UI for the app's home page
-func showMainPage(win fyne.Window) {
+func ShowSignInPage(win fyne.Window) {
+	win.Resize(fyne.NewSize(400, 550))
 	// Define components
 	smallSpacer := canvas.NewText(" ", color.White)
 	smallSpacer.TextSize = 15

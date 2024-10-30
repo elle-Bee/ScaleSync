@@ -11,7 +11,7 @@ func App() {
 	win.Resize(fyne.NewSize(400, 550))
 
 	// Show the main page initially
-	showMainPage(win)
+	ShowSignInPage(win)
 
 	win.ShowAndRun() // Show and run the window
 }

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"image/color"
+	"io"
 	"log"
 	"net/http"
 
@@ -44,8 +45,23 @@ func createUser(name, email, password string, win fyne.Window) {
 	switch resp.StatusCode {
 	case http.StatusOK:
 		dialog.ShowInformation("Success", "User created successfully you are now being logged in", win)
+
+		// Read the response body
+		Body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			dialog.ShowError(fmt.Errorf("error reading response body: %v", err), win)
+			return
+		}
+
 		var userLogin models.User_login
 		fmt.Printf("Logged in user: %+v\n", userLogin)
+		// Unmarshal the JSON response into userLogin struct
+		err = json.Unmarshal(Body, &userLogin)
+		if err != nil {
+			dialog.ShowError(fmt.Errorf("error decoding response: %v", err), win)
+			return
+		}
+
 		// Proceed to next page or dashboard
 		ShowDashboardPage(win, userLogin)
 	case http.StatusBadRequest:
@@ -94,7 +110,7 @@ func showSignUpPage(win fyne.Window) {
 	or.Alignment = fyne.TextAlignCenter
 
 	signInButton := widget.NewButton("Sign In", func() {
-		showMainPage(win) // Navigate to the sign-in page
+		ShowSignInPage(win) // Navigate to the sign-in page
 	})
 
 	// Set content layout
