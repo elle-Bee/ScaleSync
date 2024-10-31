@@ -46,11 +46,27 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 		warehouseContainer.Add(warehouseCheck)
 	}
 
+	fetch := widget.NewButton("Fetch", func() {
+
+		//text.Text = "" // Clear the text content
+		text.Hide()
+		smallSpacer.Hide()
+		data := canvas.NewText("dummy text", color.White)
+
+		// Clears previous content
+		warehouseContainer.Objects = warehouseContainer.Objects[:0]
+
+		warehouseContainer.Add(data)
+		warehouseContainer.Refresh()
+	})
+
 	// Layout the profile components
 	return container.NewVBox(
 		Spacer,
 		text,
 		smallSpacer,
 		warehouseContainer,
+		smallSpacer,
+		fetch,
 	)
 }
