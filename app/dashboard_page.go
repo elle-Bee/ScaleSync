@@ -12,7 +12,7 @@ import (
 )
 
 func ShowDashboardPage(win fyne.Window, userLogin models.User_login) {
-	win.Resize(fyne.NewSize(840, 580))
+	win.Resize(fyne.NewSize(850, 580))
 
 	warehouseRepo := &repository.WarehouseRepository{DB: database.InitDB()}
 
