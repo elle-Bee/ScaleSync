@@ -3,12 +3,14 @@ package app
 import (
 	"ScaleSync/pkg/models"
 	"ScaleSync/pkg/repository"
+	"fmt"
 	"image/color"
 	"log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -51,12 +53,33 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 		//text.Text = "" // Clear the text content
 		text.Hide()
 		smallSpacer.Hide()
-		data := canvas.NewText("dummy text", color.White)
 
 		// Clears previous content
 		warehouseContainer.Objects = warehouseContainer.Objects[:0]
 
-		warehouseContainer.Add(data)
+		warehouseNames := []string{}
+
+		for _, warehouse := range warehouses {
+			if warehouse.Location != "" {
+				warehouseNames = append(warehouseNames, fmt.Sprintf("   %s - Capacity: %d/%d", warehouse.Location, warehouse.CurrentCapacity, warehouse.TotalCapacity))
+			}
+		}
+
+		data := binding.BindStringList(&warehouseNames)
+
+		// Create List widget with data binding
+		list := widget.NewListWithData(data,
+			func() fyne.CanvasObject {
+				return widget.NewLabel("template") // Template label
+			},
+			func(i binding.DataItem, o fyne.CanvasObject) {
+				o.(*widget.Label).Bind(i.(binding.String)) // Bind data item to label
+			})
+		// Wrap the list in a container with fixed size
+		scrollableList := container.NewScroll(list)
+		scrollableList.SetMinSize(fyne.NewSize(600, 250))
+
+		warehouseContainer.Add(list)
 		warehouseContainer.Refresh()
 	})
 

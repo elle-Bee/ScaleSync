@@ -10,10 +10,10 @@ import (
 	"log"
 	"net/http"
 
-	"fyne.io/fyne/v2" // Make sure to import the correct version
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/dialog" // Correct import for dialog
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 )
 
