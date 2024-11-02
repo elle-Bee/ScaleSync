@@ -21,7 +21,7 @@ VALUES
 
 
 -- items
-DROP TABLE IF EXISTS items;
+DROP TABLE IF EXISTS items CASCADE;
 
 CREATE TABLE items (
     item_id SERIAL PRIMARY KEY,
@@ -34,9 +34,9 @@ CREATE TABLE items (
 );
 
 INSERT INTO items (item_id, name, category, description, quantity, unit_price, total_price) VALUES
-(1, 'Steel Beam', 'Construction Material', 'High-strength steel beam for structural support.', 10, 150.00, 1500.00),
+(1, 'Steel Beam', 'Construction', 'High-strength steel beam for structural support.', 10, 150.00, 1500.00),
 (2, 'LED Light Bulb', 'Electronics', 'Energy-efficient LED light bulb, 60W equivalent.', 20, 3.25, 65.00),
-(3, 'Plywood Sheet', 'Construction Material', 'Standard 4x8 ft plywood sheet for framing.', 15, 25.00, 375.00),
+(3, 'Plywood Sheet', 'Construction', 'Standard 4x8 ft plywood sheet for framing.', 15, 25.00, 375.00),
 (4, 'Copper Wire', 'Electrical', 'High-quality copper wire for electrical wiring.', 5, 100.00, 500.00),
 (5, 'Laptop - Model X', 'Electronics', '15-inch laptop with Intel i5 processor, 8GB RAM.', 30, 550.00, 16500.00),
 (6, 'PVC Pipe', 'Plumbing', '10 ft PVC pipe for plumbing installations.', 25, 12.50, 312.50),
@@ -46,11 +46,11 @@ INSERT INTO items (item_id, name, category, description, quantity, unit_price, t
 (10, 'Steel Nails', 'Hardware', 'Box of 500 steel nails for construction use.', 12, 9.00, 108.00),
 (11, 'Desk Lamp', 'Lighting', 'Adjustable desk lamp with LED light.', 14, 15.75, 220.50),
 (12, 'Electric Drill', 'Tools', 'Cordless electric drill with battery and charger.', 35, 85.00, 2975.00),
-(13, 'Concrete Mix', 'Construction Material', 'Ready-mix concrete for foundations and walls.', 22, 11.00, 242.00),
+(13, 'Concrete Mix', 'Construction', 'Ready-mix concrete for foundations and walls.', 22, 11.00, 242.00),
 (14, 'Ceramic Tiles', 'Flooring', '12x12 inch ceramic tiles for flooring.', 19, 14.00, 266.00),
 (15, 'Ceiling Fan', 'Appliances', '52-inch ceiling fan with remote control.', 17, 120.00, 2040.00),
 (16, 'Gardening Soil', 'Gardening', 'Organic gardening soil, 40 lb bag.', 10, 5.25, 52.50),
-(17, 'Shovel', 'Gardening Tools', 'Heavy-duty steel shovel for gardening.', 9, 15.00, 135.00),
+(17, 'Shovel', 'Gardening', 'Heavy-duty steel shovel for gardening.', 9, 15.00, 135.00),
 (18, 'USB Cable', 'Accessories', '6 ft USB-C cable for charging and data transfer.', 15, 3.00, 45.00),
 (19, 'Hammer', 'Tools', '16 oz steel hammer with shock-absorbing handle.', 12, 7.50, 90.00),
 (20, 'Portable Heater', 'Appliances', '1500W portable heater with thermostat.', 20, 29.99, 599.80),
@@ -64,7 +64,7 @@ INSERT INTO items (item_id, name, category, description, quantity, unit_price, t
 (28, 'Router', 'Networking', 'Dual-band wireless router with parental control.', 9, 50.00, 450.00),
 (29, 'Hand Sanitizer', 'Hygiene', '8 oz bottle of hand sanitizer.', 4, 4.50, 18.00),
 (30, 'Printer Ink Cartridge', 'Office Supplies', 'Black ink cartridge for office printers.', 3, 25.00, 75.00),
-(31, 'Cement Bag', 'Construction Material', '50 lb bag of cement for concrete work.', 28, 10.00, 280.00),
+(31, 'Cement Bag', 'Construction', '50 lb bag of cement for concrete work.', 28, 10.00, 280.00),
 (32, 'Network Cable', 'Networking', 'Cat6 network cable, 50 ft.', 15, 22.00, 330.00),
 (33, 'Fire Alarm', 'Safety', 'Smoke and CO detector with 10-year battery.', 5, 30.00, 150.00),
 (34, 'Dining Table', 'Furniture', 'Wooden dining table for 6 people.', 33, 200.00, 6600.00),
@@ -77,7 +77,7 @@ INSERT INTO items (item_id, name, category, description, quantity, unit_price, t
 (41, 'Pressure Washer', 'Tools', '2000 PSI pressure washer for outdoor cleaning.', 21, 150.00, 3150.00),
 (42, 'Extension Cord', 'Electrical', '25 ft heavy-duty extension cord.', 9, 15.00, 135.00),
 (43, 'Lawn Mower', 'Gardening', 'Electric lawn mower with adjustable height.', 13, 200.00, 2600.00),
-(44, 'Paint Roller', 'Painting Tools', '9-inch paint roller with replacement covers.', 17, 8.75, 148.75),
+(44, 'Paint Roller', 'Painting', '9-inch paint roller with replacement covers.', 17, 8.75, 148.75),
 (45, 'Storage Box', 'Furniture', 'Plastic storage box with lid, 20 gallons.', 23, 11.20, 257.60),
 (46, 'Power Drill', 'Tools', 'Electric power drill with adjustable speed.', 30, 45.00, 1350.00),
 (47, 'Surge Protector', 'Electrical', '6-outlet surge protector with 3 ft cord.', 22, 10.00, 220.00),
