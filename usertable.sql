@@ -1,9 +1,6 @@
--- Create tables for the models (if they do not exist)
-DROP TABLE IF EXISTS items;
-DROP TABLE IF EXISTS warehouses;
+-- users
 DROP TABLE IF EXISTS users;
 
--- Create users table
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -11,98 +8,152 @@ CREATE TABLE users (
     password TEXT NOT NULL
 );
 
-CREATE TABLE items (
-    item_id INT PRIMARY KEY,
-    name VARCHAR(255),
-    category VARCHAR(255),
-    description VARCHAR(255),
-    quantity INT,
-    unit_price DECIMAL(10, 2),
-    total_price DECIMAL(10, 2)
-);
-
-CREATE TABLE warehouses (
-    warehouse_id INT PRIMARY KEY,
-    location VARCHAR(255),
-    current_capacity INT,
-    total_capacity INT,
-    admin_id INT,
-    FOREIGN KEY (admin_id) REFERENCES Users(id)
-);
-
--- Insert dummy data
 INSERT INTO users (name, email, password) 
 VALUES 
-('Alice Johnson', 'alice.johnson@example.com', 'hashed_password_1'),
+('aa', 'aa@example.com', 'aa'),
 ('Bob Smith', 'bob.smith@example.com', 'hashed_password_2'),
 ('Charlie Brown', 'charlie.brown@example.com', 'hashed_password_3'),
 ('Diana Prince', 'diana.prince@example.com', 'hashed_password_4'),
 ('Eve Adams', 'eve.adams@example.com', 'hashed_password_5');
 
--- Insert dummy data into Items
-INSERT INTO Items (item_id, name, category, description, quantity, unit_price, total_price) VALUES
-(1, 'Item A', 'Category 1', 'Description for Item A', 10, 5.50, 55.00),
-(2, 'Item B', 'Category 2', 'Description for Item B', 20, 3.25, 65.00),
-(3, 'Item C', 'Category 3', 'Description for Item C', 15, 7.10, 106.50),
-(4, 'Item D', 'Category 1', 'Description for Item D', 5, 12.00, 60.00),
-(5, 'Item E', 'Category 2', 'Description for Item E', 30, 1.75, 52.50),
-(6, 'Item F', 'Category 3', 'Description for Item F', 25, 2.50, 62.50),
-(7, 'Item G', 'Category 1', 'Description for Item G', 8, 4.00, 32.00),
-(8, 'Item H', 'Category 2', 'Description for Item H', 50, 0.99, 49.50),
-(9, 'Item I', 'Category 3', 'Description for Item I', 40, 6.30, 252.00),
-(10, 'Item J', 'Category 1', 'Description for Item J', 12, 9.00, 108.00),
-(11, 'Item K', 'Category 2', 'Description for Item K', 14, 15.75, 220.50),
-(12, 'Item L', 'Category 3', 'Description for Item L', 35, 8.50, 297.50),
-(13, 'Item M', 'Category 1', 'Description for Item M', 22, 11.00, 242.00),
-(14, 'Item N', 'Category 2', 'Description for Item N', 19, 14.00, 266.00),
-(15, 'Item O', 'Category 3', 'Description for Item O', 17, 20.00, 340.00),
-(16, 'Item P', 'Category 1', 'Description for Item P', 10, 5.25, 52.50),
-(17, 'Item Q', 'Category 2', 'Description for Item Q', 9, 7.00, 63.00),
-(18, 'Item R', 'Category 3', 'Description for Item R', 15, 3.00, 45.00),
-(19, 'Item S', 'Category 1', 'Description for Item S', 12, 4.50, 54.00),
-(20, 'Item T', 'Category 2', 'Description for Item T', 20, 6.25, 125.00),
-(21, 'Item U', 'Category 3', 'Description for Item U', 25, 2.10, 52.50),
-(22, 'Item V', 'Category 1', 'Description for Item V', 18, 9.80, 176.40),
-(23, 'Item W', 'Category 2', 'Description for Item W', 7, 13.00, 91.00),
-(24, 'Item X', 'Category 3', 'Description for Item X', 13, 17.50, 227.50),
-(25, 'Item Y', 'Category 1', 'Description for Item Y', 11, 25.00, 275.00),
-(26, 'Item Z', 'Category 2', 'Description for Item Z', 6, 5.00, 30.00),
-(27, 'Item AA', 'Category 3', 'Description for Item AA', 14, 18.75, 262.50),
-(28, 'Item AB', 'Category 1', 'Description for Item AB', 9, 15.00, 135.00),
-(29, 'Item AC', 'Category 2', 'Description for Item AC', 4, 8.20, 32.80),
-(30, 'Item AD', 'Category 3', 'Description for Item AD', 3, 12.50, 37.50),
-(31, 'Item AE', 'Category 1', 'Description for Item AE', 28, 10.00, 280.00),
-(32, 'Item AF', 'Category 2', 'Description for Item AF', 15, 22.00, 330.00),
-(33, 'Item AG', 'Category 3', 'Description for Item AG', 5, 9.50, 47.50),
-(34, 'Item AH', 'Category 1', 'Description for Item AH', 33, 13.00, 429.00),
-(35, 'Item AI', 'Category 2', 'Description for Item AI', 8, 14.50, 116.00),
-(36, 'Item AJ', 'Category 3', 'Description for Item AJ', 20, 6.00, 120.00),
-(37, 'Item AK', 'Category 1', 'Description for Item AK', 11, 11.50, 126.50),
-(38, 'Item AL', 'Category 2', 'Description for Item AL', 19, 7.50, 142.50),
-(39, 'Item AM', 'Category 3', 'Description for Item AM', 7, 18.00, 126.00),
-(40, 'Item AN', 'Category 1', 'Description for Item AN', 14, 24.00, 336.00),
-(41, 'Item AO', 'Category 2', 'Description for Item AO', 21, 4.50, 94.50),
-(42, 'Item AP', 'Category 3', 'Description for Item AP', 9, 2.00, 18.00),
-(43, 'Item AQ', 'Category 1', 'Description for Item AQ', 13, 3.30, 42.90),
-(44, 'Item AR', 'Category 2', 'Description for Item AR', 17, 8.75, 148.75),
-(45, 'Item AS', 'Category 3', 'Description for Item AS', 23, 11.20, 257.60),
-(46, 'Item AT', 'Category 1', 'Description for Item AT', 30, 5.00, 150.00),
-(47, 'Item AU', 'Category 2', 'Description for Item AU', 22, 15.00, 330.00),
-(48, 'Item AV', 'Category 3', 'Description for Item AV', 10, 7.00, 70.00),
-(49, 'Item AW', 'Category 1', 'Description for Item AW', 5, 9.99, 49.95),
-(50, 'Item AX', 'Category 2', 'Description for Item AX', 6, 20.00, 120.00);
 
--- Insert dummy data into Warehouses
-INSERT INTO Warehouses (warehouse_id, location, current_capacity, total_capacity, admin_id) VALUES
-(1, 'Warehouse 1', 40, 100, 1),
-(2, 'Warehouse 2', 20, 150, 2),
-(3, 'Warehouse 3', 60, 200, 3),
-(4, 'Warehouse 4', 80, 250, 4),
-(5, 'Warehouse 5', 100, 300, 5),
-(6, 'Warehouse 6', 90, 350, 1),
-(7, 'Warehouse 7', 70, 400, 2),
-(8, 'Warehouse 8', 30, 250, 3),
-(9, 'Warehouse 9', 150, 450, 4),
-(10, 'Warehouse 10', 200, 500, 5);
+
+
+
+-- items
+DROP TABLE IF EXISTS items;
+
+CREATE TABLE items (
+    item_id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    category VARCHAR(50),
+    description TEXT,
+    quantity INT,
+    unit_price NUMERIC(10, 2),
+    total_price NUMERIC(10, 2)
+);
+
+INSERT INTO items (item_id, name, category, description, quantity, unit_price, total_price) VALUES
+(1, 'Steel Beam', 'Construction Material', 'High-strength steel beam for structural support.', 10, 150.00, 1500.00),
+(2, 'LED Light Bulb', 'Electronics', 'Energy-efficient LED light bulb, 60W equivalent.', 20, 3.25, 65.00),
+(3, 'Plywood Sheet', 'Construction Material', 'Standard 4x8 ft plywood sheet for framing.', 15, 25.00, 375.00),
+(4, 'Copper Wire', 'Electrical', 'High-quality copper wire for electrical wiring.', 5, 100.00, 500.00),
+(5, 'Laptop - Model X', 'Electronics', '15-inch laptop with Intel i5 processor, 8GB RAM.', 30, 550.00, 16500.00),
+(6, 'PVC Pipe', 'Plumbing', '10 ft PVC pipe for plumbing installations.', 25, 12.50, 312.50),
+(7, 'Office Chair', 'Furniture', 'Ergonomic office chair with lumbar support.', 8, 120.00, 960.00),
+(8, 'Air Conditioner', 'Appliances', '1.5 ton split air conditioner with inverter technology.', 50, 299.99, 14999.50),
+(9, 'Bluetooth Speaker', 'Electronics', 'Portable Bluetooth speaker with 10-hour battery life.', 40, 50.00, 2000.00),
+(10, 'Steel Nails', 'Hardware', 'Box of 500 steel nails for construction use.', 12, 9.00, 108.00),
+(11, 'Desk Lamp', 'Lighting', 'Adjustable desk lamp with LED light.', 14, 15.75, 220.50),
+(12, 'Electric Drill', 'Tools', 'Cordless electric drill with battery and charger.', 35, 85.00, 2975.00),
+(13, 'Concrete Mix', 'Construction Material', 'Ready-mix concrete for foundations and walls.', 22, 11.00, 242.00),
+(14, 'Ceramic Tiles', 'Flooring', '12x12 inch ceramic tiles for flooring.', 19, 14.00, 266.00),
+(15, 'Ceiling Fan', 'Appliances', '52-inch ceiling fan with remote control.', 17, 120.00, 2040.00),
+(16, 'Gardening Soil', 'Gardening', 'Organic gardening soil, 40 lb bag.', 10, 5.25, 52.50),
+(17, 'Shovel', 'Gardening Tools', 'Heavy-duty steel shovel for gardening.', 9, 15.00, 135.00),
+(18, 'USB Cable', 'Accessories', '6 ft USB-C cable for charging and data transfer.', 15, 3.00, 45.00),
+(19, 'Hammer', 'Tools', '16 oz steel hammer with shock-absorbing handle.', 12, 7.50, 90.00),
+(20, 'Portable Heater', 'Appliances', '1500W portable heater with thermostat.', 20, 29.99, 599.80),
+(21, 'Fire Extinguisher', 'Safety', '5 lb ABC dry chemical fire extinguisher.', 25, 35.00, 875.00),
+(22, 'LED Floodlight', 'Lighting', '100W LED floodlight for outdoor use.', 18, 19.99, 359.82),
+(23, 'Wall Paint - White', 'Paint', '1 gallon of high-quality white wall paint.', 7, 30.00, 210.00),
+(24, 'Cordless Screwdriver', 'Tools', 'Compact cordless screwdriver with bits set.', 13, 40.00, 520.00),
+(25, 'Solar Panel', 'Energy', '100W solar panel for renewable energy systems.', 11, 99.99, 1099.89),
+(26, 'Security Camera', 'Electronics', '1080p outdoor security camera with night vision.', 6, 75.00, 450.00),
+(27, 'Water Bottle', 'Accessories', '32 oz stainless steel water bottle.', 14, 18.75, 262.50),
+(28, 'Router', 'Networking', 'Dual-band wireless router with parental control.', 9, 50.00, 450.00),
+(29, 'Hand Sanitizer', 'Hygiene', '8 oz bottle of hand sanitizer.', 4, 4.50, 18.00),
+(30, 'Printer Ink Cartridge', 'Office Supplies', 'Black ink cartridge for office printers.', 3, 25.00, 75.00),
+(31, 'Cement Bag', 'Construction Material', '50 lb bag of cement for concrete work.', 28, 10.00, 280.00),
+(32, 'Network Cable', 'Networking', 'Cat6 network cable, 50 ft.', 15, 22.00, 330.00),
+(33, 'Fire Alarm', 'Safety', 'Smoke and CO detector with 10-year battery.', 5, 30.00, 150.00),
+(34, 'Dining Table', 'Furniture', 'Wooden dining table for 6 people.', 33, 200.00, 6600.00),
+(35, 'Microwave Oven', 'Appliances', '1200W microwave oven with defrost function.', 8, 80.00, 640.00),
+(36, 'Vacuum Cleaner', 'Cleaning', 'Bagless vacuum cleaner for home use.', 20, 120.00, 2400.00),
+(37, 'Screwdriver Set', 'Tools', 'Precision screwdriver set with 30 pieces.', 11, 20.00, 220.00),
+(38, 'Dishwasher', 'Appliances', 'Stainless steel dishwasher with energy efficiency.', 19, 300.00, 5700.00),
+(39, 'Garden Hose', 'Gardening', '100 ft expandable garden hose.', 7, 25.00, 175.00),
+(40, 'Power Bank', 'Electronics', '10000mAh power bank for mobile devices.', 14, 12.00, 168.00),
+(41, 'Pressure Washer', 'Tools', '2000 PSI pressure washer for outdoor cleaning.', 21, 150.00, 3150.00),
+(42, 'Extension Cord', 'Electrical', '25 ft heavy-duty extension cord.', 9, 15.00, 135.00),
+(43, 'Lawn Mower', 'Gardening', 'Electric lawn mower with adjustable height.', 13, 200.00, 2600.00),
+(44, 'Paint Roller', 'Painting Tools', '9-inch paint roller with replacement covers.', 17, 8.75, 148.75),
+(45, 'Storage Box', 'Furniture', 'Plastic storage box with lid, 20 gallons.', 23, 11.20, 257.60),
+(46, 'Power Drill', 'Tools', 'Electric power drill with adjustable speed.', 30, 45.00, 1350.00),
+(47, 'Surge Protector', 'Electrical', '6-outlet surge protector with 3 ft cord.', 22, 10.00, 220.00),
+(48, 'Electric Kettle', 'Appliances', '1.7L electric kettle with auto shut-off.', 10, 25.00, 250.00),
+(49, 'Wi-Fi Range Extender', 'Networking', 'Wi-Fi range extender with dual-band support.', 5, 35.00, 175.00),
+(50, 'Hand Saw', 'Tools', '20-inch hand saw for woodworking.', 6, 15.00, 90.00);
+
+
+
+
+
+-- warehouses
+DROP TABLE IF EXISTS warehouses;
+
+CREATE TABLE warehouses (
+    warehouse_id SERIAL PRIMARY KEY,
+    location VARCHAR(100),
+    current_capacity INT,
+    total_capacity INT,
+    admin_id INT
+);
+
+INSERT INTO warehouses (warehouse_id, location, current_capacity, total_capacity, admin_id) VALUES
+(1, 'Okhla Industrial Area, New Delhi', 40, 100, 1),
+(2, 'Udyog Vihar, Gurgaon', 20, 150, 2),
+(3, 'Greater Noida Industrial Area, Greater Noida', 60, 200, 3),
+(4, 'Sohna Road, Gurgaon', 80, 250, 4),
+(5, 'Sector 62, Noida', 100, 300, 5),
+(6, 'Kirti Nagar, New Delhi', 90, 350, 1),
+(7, 'Manesar Industrial Area, Gurgaon', 70, 400, 2),
+(8, 'Narela Industrial Area, New Delhi', 30, 250, 3),
+(9, 'Sector 59, Faridabad', 150, 450, 4),
+(10, 'Bhiwadi Industrial Area, Bhiwadi', 200, 500, 5);
+
+
+
+
+
+-- warehouseItems
+DROP TABLE IF EXISTS warehouseItems;
+
+CREATE TABLE warehouseItems (
+    warehouse_id INT NOT NULL,
+    item_id INT NOT NULL,
+    quantity INT,  -- quantity of this item in this specific warehouse
+    PRIMARY KEY (warehouse_id, item_id),
+    FOREIGN KEY (warehouse_id) REFERENCES Warehouses(warehouse_id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES Items(item_id) ON DELETE CASCADE
+);
+
+INSERT INTO warehouseItems (warehouse_id, item_id, quantity) VALUES
+(1, 1, 5),
+(1, 2, 10),
+(1, 3, 7),
+(2, 4, 20),
+(2, 5, 15),
+(2, 6, 8),
+(3, 7, 12),
+(3, 8, 30),
+(3, 9, 18),
+(4, 10, 25),
+(4, 11, 14),
+(4, 12, 9),
+(5, 13, 20),
+(5, 14, 22),
+(5, 15, 10),
+(6, 16, 8),
+(6, 17, 15),
+(6, 18, 5),
+(7, 19, 12),
+(7, 20, 16),
+(8, 21, 30),
+(8, 22, 18),
+(9, 23, 22),
+(9, 24, 25),
+(10, 25, 28),
+(10, 26, 10);
 
 --psql -U postgres -d scalesync -f ./usertable.sql
