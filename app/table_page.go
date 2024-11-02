@@ -1,6 +1,7 @@
 package app
 
 import (
+	"ScaleSync/pkg/database"
 	"ScaleSync/pkg/models"
 	"ScaleSync/pkg/repository"
 	"fmt"
@@ -61,11 +62,20 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 		warehouseCollectionContainer.Objects = warehouseCollectionContainer.Objects[:0]
 		warehouseCollectionContainer.Resize(fyne.NewSize(600, 250))
 
-		for i, warehouse := range checkedWarehouses {
-			if warehouse.Location != "" {
+		itemRepo := &repository.ItemRepository{DB: database.InitDB()}
+
+		for _, checkedWarehouse := range checkedWarehouses {
+			if checkedWarehouse.Location != "" {
 				warehouseData := []string{}
-				for _, item := range warehouse.Items {
-					warehouseData = append(warehouseData, fmt.Sprintf("   %s", item))
+
+				checkedItems, err := itemRepo.GetItemsByWarehouseID(checkedWarehouse.Warehouse_ID)
+				if err != nil {
+					log.Println("Error fetching warehouses: ", err)
+					return
+				}
+
+				for _, checkedItem := range checkedItems {
+					warehouseData = append(warehouseData, fmt.Sprintf("%s", checkedItem))
 				}
 
 				data := binding.BindStringList(&warehouseData)
@@ -82,7 +92,7 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 				scrollableList := container.NewScroll(list)
 				scrollableList.SetMinSize(fyne.NewSize(600, 250))
 
-				warehouseName := canvas.NewText(checkedWarehouses[i].Location, color.White)
+				warehouseName := canvas.NewText(checkedWarehouse.Location, color.White)
 				warehouseName.TextSize = 15
 
 				header := canvas.NewText("   ItemID   Item Name   Category   Quantity   Unit Price   Total Price   Description", color.White)

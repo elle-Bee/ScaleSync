@@ -97,8 +97,7 @@ func (r *WarehouseRepository) GetWarehousesByAdminID(adminID int) ([]models.Ware
 	rows, err := r.DB.Query(context.Background(), `
 		SELECT warehouse_id, location, current_capacity, total_capacity 
 		FROM warehouses 
-		WHERE admin_id = (SELECT id FROM users WHERE id = $1)
-	`, adminID)
+		WHERE admin_id = (SELECT id FROM users WHERE id = $1)`, adminID)
 	if err != nil {
 		return nil, err
 	}
