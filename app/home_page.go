@@ -27,7 +27,7 @@ func ShowHomePage(win fyne.Window, userLogin models.User_login, warehouseRepo *r
 	text.TextStyle.Bold = true
 
 	// Fetch details of warehouses by user name
-	log.Printf("Fetching warehouses for user name: %d", userLogin.ID)
+	log.Printf("Fetching warehouses for user ID: %d", userLogin.ID)
 	warehouses, err := warehouseRepo.GetWarehousesByAdminID(userLogin.ID)
 	if err != nil {
 		log.Println("Error fetching warehouses: ", err)
