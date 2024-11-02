@@ -29,13 +29,12 @@ func NewItem(item_id int, category, name, description string, unit_price float64
 func (item Item) String() string {
 	totalPrice := item.Quantity * int(item.UnitPrice)
 	return fmt.Sprintf(
-		"[%d : %s : %s : %d : $%.2f : $%.2f : %s]",
+		"    %d            %s        %s           %d             $%.2f        	 $%.2f",
 		item.Item_ID,
 		item.Name,
 		item.Category,
 		item.Quantity,
 		item.UnitPrice,
 		float64(totalPrice),
-		item.Description,
 	)
 }

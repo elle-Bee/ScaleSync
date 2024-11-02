@@ -83,21 +83,31 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 				// Create List widget with data binding
 				list := widget.NewListWithData(data,
 					func() fyne.CanvasObject {
-						return widget.NewLabel("template") // Template label
+						label := widget.NewLabel("template") // Template label
+						label.Resize(fyne.NewSize(600, 30))  // Set height for each list item
+						return label
 					},
 					func(i binding.DataItem, o fyne.CanvasObject) {
 						o.(*widget.Label).Bind(i.(binding.String)) // Bind data item to label
 					})
+
 				// Wrap the list in a container with fixed size
 				scrollableList := container.NewScroll(list)
 				scrollableList.SetMinSize(fyne.NewSize(600, 250))
 
-				warehouseName := canvas.NewText(checkedWarehouse.Location, color.White)
+				warehouseName := canvas.NewText("  "+checkedWarehouse.Location, color.White)
 				warehouseName.TextSize = 15
+				warehouseName.TextStyle.Bold = true
 
-				header := canvas.NewText("   ItemID   Item Name   Category   Quantity   Unit Price   Total Price   Description", color.White)
+				header := canvas.NewText("   ItemID      Item Name            Category        Quantity    Unit Price    Total Price", color.White)
 
-				warehouseContainer := container.NewVBox(warehouseName, header, list)
+				smallSpacer := canvas.NewText(" ", color.White)
+				smallSpacer.TextSize = 5
+
+				mediumSpacer := canvas.NewText(" ", color.White)
+				mediumSpacer.TextSize = 1
+
+				warehouseContainer := container.NewVBox(warehouseName, smallSpacer, header, list, mediumSpacer)
 				warehouseContainer.Resize(fyne.NewSize(600, 250))
 
 				warehouseCollectionContainer.Add(warehouseContainer)
