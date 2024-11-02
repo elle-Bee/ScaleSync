@@ -35,8 +35,10 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 
 	checkedWarehouses := []models.Warehouse{}
 
-	// Create container for displaying warehouses
+	// Create a container for displaying warehouses
 	warehouseCollectionContainer := container.NewVBox()
+	warehouseCollectionContainer.MinSize()
+
 	for _, warehouse := range warehouses {
 		// Create a checkbox for each warehouse
 		warehouseCheck := widget.NewCheck(warehouse.Location, func(checked bool) {
@@ -53,14 +55,11 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 	}
 
 	fetch := widget.NewButton("Fetch", func() {
-
-		//text.Text = "" // Clear the text content
 		text.Hide()
 		smallSpacer.Hide()
 
 		// Clears previous content
-		warehouseCollectionContainer.Objects = warehouseCollectionContainer.Objects[:0]
-		warehouseCollectionContainer.Resize(fyne.NewSize(600, 250))
+		warehouseCollectionContainer.Objects = nil
 
 		itemRepo := &repository.ItemRepository{DB: database.InitDB()}
 
@@ -70,7 +69,7 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 
 				checkedItems, err := itemRepo.GetItemsByWarehouseID(checkedWarehouse.Warehouse_ID)
 				if err != nil {
-					log.Println("Error fetching warehouses: ", err)
+					log.Println("Error fetching items: ", err)
 					return
 				}
 
@@ -80,20 +79,35 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 
 				data := binding.BindStringList(&warehouseData)
 
-				// Create List widget with data binding
-				list := widget.NewListWithData(data,
-					func() fyne.CanvasObject {
-						label := widget.NewLabel("template") // Template label
-						label.Resize(fyne.NewSize(600, 30))  // Set height for each list item
-						return label
-					},
-					func(i binding.DataItem, o fyne.CanvasObject) {
-						o.(*widget.Label).Bind(i.(binding.String)) // Bind data item to label
-					})
+				//horizontalListContainer := container.NewHBox()
+				var listOfHorizontalContainers []*container.Scroll
 
-				// Wrap the list in a container with fixed size
-				scrollableList := container.NewScroll(list)
-				scrollableList.SetMinSize(fyne.NewSize(600, 250))
+				for i := 0; i < data.Length(); i++ {
+					horizontalListContainer := container.NewHBox()
+
+					//Retrieve data
+					itemData, err := data.GetValue(i)
+					if err != nil {
+						log.Println("Error getting item from data list:", err)
+						continue
+					}
+
+					label := widget.NewLabel(itemData)
+					label.Alignment = fyne.TextAlignCenter
+					label.Resize(fyne.NewSize(150, 30)) // Set width and height for each label
+
+					horizontalListContainer.Add(label)
+
+					scrollableHorizontal := container.NewHScroll(horizontalListContainer)
+					scrollableHorizontal.SetMinSize(fyne.NewSize(600, 50))
+					listOfHorizontalContainers = append(listOfHorizontalContainers, scrollableHorizontal)
+				}
+
+				// A vertical container to hold all the scrollable horizontal containers
+				verticalContainer := container.NewVBox()
+				for _, hScrollContainer := range listOfHorizontalContainers {
+					verticalContainer.Add(hScrollContainer)
+				}
 
 				warehouseName := canvas.NewText("  "+checkedWarehouse.Location, color.White)
 				warehouseName.TextSize = 15
@@ -105,26 +119,29 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 				smallSpacer.TextSize = 5
 
 				mediumSpacer := canvas.NewText(" ", color.White)
-				mediumSpacer.TextSize = 1
+				mediumSpacer.TextSize = 10
 
-				warehouseContainer := container.NewVBox(warehouseName, smallSpacer, header, list, mediumSpacer)
-				warehouseContainer.Resize(fyne.NewSize(600, 250))
-
-				warehouseCollectionContainer.Add(warehouseContainer)
-				warehouseCollectionContainer.Refresh()
-
+				warehouseCollectionContainer.Add(warehouseName)
+				warehouseCollectionContainer.Add(smallSpacer)
+				warehouseCollectionContainer.Add(header)
+				warehouseCollectionContainer.Add(verticalContainer)
+				warehouseCollectionContainer.Add(mediumSpacer)
 			}
 		}
-
+		warehouseCollectionContainer.MinSize()
 		warehouseCollectionContainer.Refresh()
 	})
+
+	// Wrap the warehouse collection container in a vertical scroll container
+	scrollableWarehouseCollection := container.NewVScroll(warehouseCollectionContainer)
+	scrollableWarehouseCollection.SetMinSize(fyne.NewSize(600, 550))
 
 	// Layout the profile components
 	return container.NewVBox(
 		Spacer,
 		text,
 		smallSpacer,
-		warehouseCollectionContainer,
+		scrollableWarehouseCollection, // Use the scrollable version here
 		smallSpacer,
 		fetch,
 	)
