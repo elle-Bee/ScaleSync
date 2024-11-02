@@ -32,20 +32,23 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 		return nil
 	}
 
+	checkedWarehouses := []models.Warehouse{}
+
 	// Create container for displaying warehouses
-	warehouseContainer := container.NewVBox()
+	warehouseCollectionContainer := container.NewVBox()
 	for _, warehouse := range warehouses {
 		// Create a checkbox for each warehouse
 		warehouseCheck := widget.NewCheck(warehouse.Location, func(checked bool) {
 			if checked {
 				log.Printf("Warehouse %d (%s) selected", warehouse.Warehouse_ID, warehouse.Location)
+				checkedWarehouses = append(checkedWarehouses, warehouse)
 			} else {
 				log.Printf("Warehouse %d (%s) deselected", warehouse.Warehouse_ID, warehouse.Location)
 			}
 		})
 		// Customize checkbox label with more warehouse info if needed
 		warehouseCheck.SetText(warehouse.Location)
-		warehouseContainer.Add(warehouseCheck)
+		warehouseCollectionContainer.Add(warehouseCheck)
 	}
 
 	fetch := widget.NewButton("Fetch", func() {
@@ -55,32 +58,45 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 		smallSpacer.Hide()
 
 		// Clears previous content
-		warehouseContainer.Objects = warehouseContainer.Objects[:0]
+		warehouseCollectionContainer.Objects = warehouseCollectionContainer.Objects[:0]
+		warehouseCollectionContainer.Resize(fyne.NewSize(600, 250))
 
-		warehouseNames := []string{}
-
-		for _, warehouse := range warehouses {
+		for i, warehouse := range checkedWarehouses {
 			if warehouse.Location != "" {
-				warehouseNames = append(warehouseNames, fmt.Sprintf("   %s - Capacity: %d/%d", warehouse.Location, warehouse.CurrentCapacity, warehouse.TotalCapacity))
+				warehouseData := []string{}
+				for _, item := range warehouse.Items {
+					warehouseData = append(warehouseData, fmt.Sprintf("   %s", item))
+				}
+
+				data := binding.BindStringList(&warehouseData)
+
+				// Create List widget with data binding
+				list := widget.NewListWithData(data,
+					func() fyne.CanvasObject {
+						return widget.NewLabel("template") // Template label
+					},
+					func(i binding.DataItem, o fyne.CanvasObject) {
+						o.(*widget.Label).Bind(i.(binding.String)) // Bind data item to label
+					})
+				// Wrap the list in a container with fixed size
+				scrollableList := container.NewScroll(list)
+				scrollableList.SetMinSize(fyne.NewSize(600, 250))
+
+				warehouseName := canvas.NewText(checkedWarehouses[i].Location, color.White)
+				warehouseName.TextSize = 15
+
+				header := canvas.NewText("   ItemID   Item Name   Category   Quantity   Unit Price   Total Price   Description", color.White)
+
+				warehouseContainer := container.NewVBox(warehouseName, header, list)
+				warehouseContainer.Resize(fyne.NewSize(600, 250))
+
+				warehouseCollectionContainer.Add(warehouseContainer)
+				warehouseCollectionContainer.Refresh()
+
 			}
 		}
 
-		data := binding.BindStringList(&warehouseNames)
-
-		// Create List widget with data binding
-		list := widget.NewListWithData(data,
-			func() fyne.CanvasObject {
-				return widget.NewLabel("template") // Template label
-			},
-			func(i binding.DataItem, o fyne.CanvasObject) {
-				o.(*widget.Label).Bind(i.(binding.String)) // Bind data item to label
-			})
-		// Wrap the list in a container with fixed size
-		scrollableList := container.NewScroll(list)
-		scrollableList.SetMinSize(fyne.NewSize(600, 250))
-
-		warehouseContainer.Add(list)
-		warehouseContainer.Refresh()
+		warehouseCollectionContainer.Refresh()
 	})
 
 	// Layout the profile components
@@ -88,7 +104,7 @@ func ShowTablePage(win fyne.Window, userLogin models.User_login, warehouseRepo *
 		Spacer,
 		text,
 		smallSpacer,
-		warehouseContainer,
+		warehouseCollectionContainer,
 		smallSpacer,
 		fetch,
 	)
