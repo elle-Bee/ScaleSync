@@ -7,6 +7,8 @@ import (
 	"os"
 	"time"
 
+	"strings"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
@@ -51,23 +53,76 @@ func InitDB() *pgxpool.Pool {
 		log.Fatalf("Unable to create connection pool: %v", err)
 	}
 
-	query := `
-    CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        email VARCHAR(150) UNIQUE NOT NULL,
-        password VARCHAR(100) NOT NULL
-    );
-    `
+	createTableQuery := `
+		CREATE TABLE IF NOT EXISTS users (
+			id SERIAL PRIMARY KEY,
+			name VARCHAR(100) NOT NULL,
+			email VARCHAR(150) UNIQUE NOT NULL,
+			password VARCHAR(100) NOT NULL
+		);
+	`
 
-	// Execute the query
-	_, err2 := Pool.Exec(context.Background(), query)
-	if err2 != nil {
-		log.Fatalf("Failed to create users table: %v", err2)
-	} else {
-		fmt.Println("Users table created or already exists.")
+	insertQuery := `
+		INSERT INTO users (name, email, password) 
+		VALUES 
+		('aa', 'aa@example.com', 'aa'),
+		('Bob Smith', 'bob.smith@example.com', 'p2'),
+		('Charlie Brown', 'charlie.brown@example.com', 'p3'),
+		('Diana Prince', 'diana.prince@example.com', 'p4'),
+		('Eve Adams', 'eve.adams@example.com', 'p5');
+	`
+	// Execute CREATE TABLE query
+	_, err = Pool.Exec(context.Background(), createTableQuery)
+	if err != nil {
+		log.Fatalf("Failed to execute create table query: %v", err)
 	}
 
+	// Process the INSERT query
+	lines := strings.Split(insertQuery, "\n")
+	var newValues []string
+
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "(") && strings.HasSuffix(line, "),") || strings.HasSuffix(line, ");") {
+			line = strings.TrimSuffix(line, ",")
+			line = strings.TrimSuffix(line, ");")
+			line = strings.TrimPrefix(line, "(")
+			line = strings.TrimSuffix(line, ")")
+			parts := strings.Split(line, ", ")
+			if len(parts) != 3 {
+				log.Fatalf("Malformed value line: %v", line)
+			}
+
+			name := strings.Trim(parts[0], "'")
+			email := strings.Trim(parts[1], "'")
+			password := strings.Trim(parts[2], "'")
+
+			hashedPassword := HashPassword(password)
+			if err != nil {
+				log.Fatalf("Failed to hash password: %v", err)
+			}
+
+			newValues = append(newValues, fmt.Sprintf("('%s', '%s', '%s')", name, email, hashedPassword))
+		}
+	}
+
+	// Build new INSERT query
+	finalInsertQuery := fmt.Sprintf(
+		"INSERT INTO users (name, email, password) VALUES %s;",
+		strings.Join(newValues, ","),
+	)
+
+	// Execute the new INSERT query
+	rowCount := 0
+	Pool.QueryRow(context.Background(), "SELECT COUNT(*) FROM users").Scan(&rowCount)
+	if rowCount == 0 {
+		_, err = Pool.Exec(context.Background(), finalInsertQuery)
+		if err != nil {
+			log.Fatalf("Failed to execute insert query: %v", err)
+		}
+
+		fmt.Println("Users inserted successfully with hashed passwords.")
+	}
 	fmt.Println("Connected to PostgreSQL")
 	return Pool
 }

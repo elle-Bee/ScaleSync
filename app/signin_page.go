@@ -40,10 +40,10 @@ func ShowSignInPage(win fyne.Window) {
 
 	// Create input fields for username and Password
 	nameEntry := widget.NewEntry()
-	nameEntry.SetPlaceHolder("Enter username")
+	nameEntry.SetPlaceHolder("Enter Email ID")
 
 	passwordEntry := widget.NewPasswordEntry()
-	passwordEntry.SetPlaceHolder("Enter password")
+	passwordEntry.SetPlaceHolder("Enter Password")
 
 	// Sign-in button functionality
 	signIn := widget.NewButton("Sign In", func() {
@@ -90,7 +90,7 @@ func loginUser(username, password string, win fyne.Window) {
 
 	// Prepare request body
 	user := models.User{
-		Name:     username,
+		Email:    username,
 		Password: password,
 	}
 	jsonData, err := json.Marshal(user)

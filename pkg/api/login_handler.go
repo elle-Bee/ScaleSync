@@ -13,21 +13,21 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	json.NewDecoder(r.Body).Decode(&user)
 
-	name := user.Name
+	name := user.Email
 	password := user.Password
 
-	query := `Select id, name, email, password FROM users WHERE name = ` + `'` + name + `'`
+	query := `Select id, name, email, password FROM users WHERE email = ` + `'` + name + `'`
 	fmt.Println(query)
 	err := database.Pool.QueryRow(context.Background(), query).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
 
 	if err != nil {
-		http.Error(w, "Username or Password is wrong", http.StatusNotFound)
+		http.Error(w, "Email or Password is wrong", http.StatusNotFound)
 		return
 	}
 
 	if database.CheckHash(password, user.Password) != nil {
 		fmt.Println("YOU HAVE ENETERD WRONG PASSWD")
-		http.Error(w, "Username or Password is wrong", http.StatusNotFound)
+		http.Error(w, "Email or Password is wrong", http.StatusNotFound)
 		return
 	}
 	var User_log models.User_login
