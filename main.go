@@ -6,19 +6,21 @@ import (
 	"ScaleSync/pkg/database"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
 	// Initialize the database connection
-	database.Pool = database.InitDB()
-	defer database.Pool.Close() // Ensure the connection pool closes when the program exits
+	database := database.InitDB()
+	defer database.Close() // Ensure the connection pool closes when the program exits
 
 	// Start the HTTP server
 	go startServer()
 
 	// Start the app (e.g., GUI or other application logic)
+	os.Setenv("FYNE_THEME", "dark")
 	app.App()
 }
 

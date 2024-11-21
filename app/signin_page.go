@@ -17,18 +17,26 @@ import (
 )
 
 // Main UI for the app's home page
-func showMainPage(win fyne.Window) {
+func ShowSignInPage(win fyne.Window) {
+	win.Resize(fyne.NewSize(400, 580))
 	// Define components
-	smallSpacer := canvas.NewText(" ", color.White)
-	smallSpacer.TextSize = 15
+	SmallSpacer := canvas.NewText(" ", color.White)
+	SmallSpacer.TextSize = 15
+
+	minSpacer := canvas.NewText(" ", color.White)
+	minSpacer.TextSize = 5
 
 	appName := canvas.NewText("ScaleSync", color.White)
 	appName.TextSize = 45
 	appName.TextStyle.Bold = true
 	appName.Alignment = fyne.TextAlignCenter
 
-	largeSpacer := canvas.NewText(" ", color.White)
-	largeSpacer.TextSize = 40
+	caption := canvas.NewText("A scalable Inventory management system", color.White)
+	caption.TextSize = 15
+	caption.Alignment = fyne.TextAlignCenter
+
+	LargeSpacer := canvas.NewText(" ", color.White)
+	LargeSpacer.TextSize = 30
 
 	// Create input fields for username and Password
 	nameEntry := widget.NewEntry()
@@ -54,16 +62,18 @@ func showMainPage(win fyne.Window) {
 
 	// content layout
 	content := container.NewVBox(
-		smallSpacer,
+		SmallSpacer,
 		appName,
-		largeSpacer,
+		minSpacer,
+		caption,
+		LargeSpacer,
 		nameEntry,
 		passwordEntry,
-		smallSpacer,
+		SmallSpacer,
 		signIn,
-		smallSpacer,
+		SmallSpacer,
 		or,
-		smallSpacer,
+		SmallSpacer,
 		signUp,
 	)
 
@@ -74,7 +84,7 @@ func showMainPage(win fyne.Window) {
 // Login user function to validate credentials with the server
 func loginUser(username, password string, win fyne.Window) {
 	if username == "" || password == "" {
-		dialog.ShowError(fmt.Errorf("Please enter both username and password"), win)
+		dialog.ShowError(fmt.Errorf("please enter both username and password"), win)
 		return
 	}
 
@@ -85,14 +95,14 @@ func loginUser(username, password string, win fyne.Window) {
 	}
 	jsonData, err := json.Marshal(user)
 	if err != nil {
-		dialog.ShowError(fmt.Errorf("Failed to encode user data: %v", err), win)
+		dialog.ShowError(fmt.Errorf("failed to encode user data: %v", err), win)
 		return
 	}
 
 	// Make a POST request to the login endpoint
 	resp, err := http.Post("http://localhost:8080/login", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		dialog.ShowError(fmt.Errorf("Error logging in: %v", err), win)
+		dialog.ShowError(fmt.Errorf("error logging in: %v", err), win)
 		return
 	}
 	defer resp.Body.Close()
@@ -100,26 +110,27 @@ func loginUser(username, password string, win fyne.Window) {
 	// Handle response from the server
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		dialog.ShowError(fmt.Errorf("Error reading response: %v", err), win)
+		dialog.ShowError(fmt.Errorf("error reading response: %v", err), win)
 		return
 	}
 
 	// If the response status is OK, proceed to the next step
 	if resp.StatusCode == http.StatusOK {
-		var userLog models.User_login
-		err = json.Unmarshal(body, &userLog)
+		var userLogin models.User_login
+		err = json.Unmarshal(body, &userLogin)
 		if err != nil {
-			dialog.ShowError(fmt.Errorf("Error decoding response: %v", err), win)
+			dialog.ShowError(fmt.Errorf("error decoding response: %v", err), win)
 			return
 		}
 		// Login successful
+		fmt.Printf("Raw response body: %s\n", string(body))
 		dialog.ShowInformation("Login Success", "You have successfully logged in.", win)
-		fmt.Printf("Logged in user: %+v\n", userLog)
+		fmt.Printf("Logged in user: %+v\n", userLogin)
 
 		// Proceed to next page or dashboard
-		ShowDashboardPage(win)
+		ShowDashboardPage(win, userLogin)
 
 	} else {
-		dialog.ShowError(fmt.Errorf("Invalid login credentials"), win)
+		dialog.ShowError(fmt.Errorf("invalid login credentials"), win)
 	}
 }
