@@ -9,14 +9,13 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
-	// Initialize the database connection
 	database := database.InitDB()
 	defer database.Close() // Ensure the connection pool closes when the program exits
 
-	// Start the HTTP server
 	go startServer()
 
 	// Start the app (e.g., GUI or other application logic)
@@ -26,6 +25,8 @@ func main() {
 
 func startServer() {
 	r := mux.NewRouter()
+
+	r.Handle("/metrics", promhttp.Handler())
 
 	// User routes
 	r.HandleFunc("/users", api.CreateUser).Methods("POST")
