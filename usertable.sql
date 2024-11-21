@@ -10,7 +10,7 @@ CREATE TABLE users (
 
 INSERT INTO users (name, email, password) 
 VALUES 
-('aa', 'aa@example.com', 'aa'),
+('aa', 'aa', 'aa'),
 ('Bob Smith', 'bob.smith@example.com', 'hashed_password_2'),
 ('Charlie Brown', 'charlie.brown@example.com', 'hashed_password_3'),
 ('Diana Prince', 'diana.prince@example.com', 'hashed_password_4'),
