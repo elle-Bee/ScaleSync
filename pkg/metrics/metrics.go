@@ -104,3 +104,8 @@ func InitMetrics() {
 func MetricsHandler() http.Handler {
 	return promhttp.Handler()
 }
+
+// RegisterMetrics registers custom metrics with Prometheus
+func RegisterMetrics() {
+	prometheus.MustRegister(ApiRequests, ApiSuccesses, ApiFailures, ApiRequestDuration)
+}

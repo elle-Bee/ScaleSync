@@ -2,6 +2,6 @@ global:
   scrape_interval: 1s  # How frequently to scrape metrics from targets
 
 scrape_configs:
-  - job_name: 'scale_sync_app'  # A job name to identify your app
+  - job_name: 'scale_sync_app'  # A job name for the app
     static_configs:
-      - targets: ['localhost:8080']  # Replace with your app's address
+      - targets: ['localhost:8080']

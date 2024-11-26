@@ -11,10 +11,10 @@ CREATE TABLE users (
 INSERT INTO users (name, email, password) 
 VALUES 
 ('aa', 'aa@example.com', 'aa'),
-('Bob Smith', 'bob.smith@example.com', 'hashed_password_2'),
-('Charlie Brown', 'charlie.brown@example.com', 'hashed_password_3'),
-('Diana Prince', 'diana.prince@example.com', 'hashed_password_4'),
-('Eve Adams', 'eve.adams@example.com', 'hashed_password_5');
+('Bob Smith', 'bob.smith@example.com', 'p1'),
+('Charlie Brown', 'charlie.brown@example.com', 'p2'),
+('Diana Prince', 'diana.prince@example.com', 'p3'),
+('Eve Adams', 'eve.adams@example.com', 'p4');
 
 
 

@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: amity
-      POSTGRES_DB: go_crud
+      POSTGRES_DB: scalesync
     ports:
       - "5432:5432"  # Expose PostgreSQL on the default port
     networks:

@@ -4,6 +4,7 @@ import (
 	"ScaleSync/app"
 	"ScaleSync/pkg/api"
 	"ScaleSync/pkg/database"
+	"ScaleSync/pkg/metrics"
 	"log"
 	"net/http"
 	"os"
@@ -27,6 +28,8 @@ func startServer() {
 	r := mux.NewRouter()
 
 	r.Handle("/metrics", promhttp.Handler())
+	metrics.RegisterMetrics()
+	http.Handle("/metrics", promhttp.Handler())
 
 	// User routes
 	r.HandleFunc("/users", api.CreateUser).Methods("POST")
