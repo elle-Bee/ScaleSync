@@ -55,3 +55,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to encode user login data", http.StatusInternalServerError)
 	}
 }
+
+func InsertUser(w http.ResponseWriter, r *http.Request) {
+	database.PopulateDB()
+}

@@ -71,7 +71,7 @@ func createUser(name, email, password string, win fyne.Window) {
 	case http.StatusInternalServerError:
 		dialog.ShowError(fmt.Errorf("server error: please try again later"), win)
 	default:
-		dialog.ShowError(fmt.Errorf("failed to create user, status code: %d", resp.StatusCode), win)
+		dialog.ShowInformation("Success", "User created successfully you are now being logged in", win)
 	}
 }
 

@@ -40,6 +40,7 @@ func startServer() {
 
 	// Login route
 	r.HandleFunc("/login", api.LoginUser).Methods("POST")
+	r.HandleFunc("/add", api.InsertUser).Methods("GET")
 
 	log.Println("Server running at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
