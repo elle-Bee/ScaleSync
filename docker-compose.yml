@@ -1,32 +1,105 @@
-version: '3.8'
+version: '3'
 
 services:
-  postgres:
-    image: postgres:14
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: amity
-      POSTGRES_DB: scalesync
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /data/postgres
+      TZ: Asia/Tehran
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${DB_NAME} -U ${DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgresql:/data/postgres
     ports:
-      - "5432:5432"  # Expose PostgreSQL on the default port
+      - "5432:5432"
+    restart: unless-stopped
     networks:
-      - go-post
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./docker/prometheus:/etc/prometheus
+      - prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  postgresql-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgresql-exporter
+    ports:
+      - "9187:9187"
+    environment:
+      DATA_SOURCE_NAME: "postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      prometheus:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - monitoring
 
   go-app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "5000:8080"  # Expose Go app on port 5000 (maps to Go's 8080)
+      - "5000:8080"
     environment:
-      DB_HOST: postgres  # Connect to the 'postgres' service
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: amity
-      DB_NAME: go_crud
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      DISPLAY: "host.docker.internal:0"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
     depends_on:
-      - postgres
+      - postgresql
     networks:
       - go-post
+      - x11-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - grafana:/var/lib/grafana
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+volumes:
+  prometheus:
+  grafana:
+  postgresql:
 
 networks:
+  monitoring:
+    driver: bridge
   go-post:
+    driver: bridge
+  x11-network:
     driver: bridge

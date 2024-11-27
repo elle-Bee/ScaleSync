@@ -8,8 +8,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"golang.org/x/exp/rand"
 )
 
 func LoginUser(w http.ResponseWriter, r *http.Request) {
@@ -57,5 +59,12 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func InsertUser(w http.ResponseWriter, r *http.Request) {
-	database.PopulateDB()
+	i := 0
+	for true {
+		database.PopulateDB()
+		i++
+		randomInterval := time.Duration(rand.Intn(10)+1) * time.Second
+		fmt.Printf("Inserted user %d, sleeping for %v\n", i+1, randomInterval)
+		time.Sleep(randomInterval)
+	}
 }

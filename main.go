@@ -19,7 +19,6 @@ func main() {
 
 	go startServer()
 
-	// Start the app (e.g., GUI or other application logic)
 	os.Setenv("FYNE_THEME", "dark")
 	app.App()
 }
