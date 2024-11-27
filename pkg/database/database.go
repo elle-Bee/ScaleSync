@@ -26,7 +26,7 @@ func InitDB() *pgxpool.Pool {
 	// Connection string
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASS"), // Use DB_PASS instead of DB_PASSWORD
+		os.Getenv("DB_PASS"),
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_NAME"),
@@ -52,7 +52,7 @@ func InitDB() *pgxpool.Pool {
 	if err != nil {
 		log.Fatalf("Unable to create connection pool: %v", err)
 	}
-
+	//PopulateDB()
 	createTableQuery := `
 		CREATE TABLE IF NOT EXISTS users (
 			id SERIAL PRIMARY KEY,
@@ -123,6 +123,7 @@ func InitDB() *pgxpool.Pool {
 
 		fmt.Println("Users inserted successfully with hashed passwords.")
 	}
+
 	fmt.Println("Connected to PostgreSQL")
 	return Pool
 }

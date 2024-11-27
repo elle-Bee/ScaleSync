@@ -2,16 +2,29 @@ package api
 
 import (
 	"ScaleSync/pkg/database"
+	"ScaleSync/pkg/metrics"
 	"ScaleSync/pkg/models"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 func LoginUser(w http.ResponseWriter, r *http.Request) {
+	timer := prometheus.NewTimer(metrics.ApiRequestDuration.WithLabelValues("login_user"))
+	defer timer.ObserveDuration()
+
+	metrics.ApiRequests.WithLabelValues("login_user").Inc()
+
 	var user models.User
-	json.NewDecoder(r.Body).Decode(&user)
+
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		metrics.ApiFailures.WithLabelValues("login_user").Inc()
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
 
 	name := user.Email
 	password := user.Password
@@ -26,7 +39,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if database.CheckHash(password, user.Password) != nil {
-		fmt.Println("YOU HAVE ENETERD WRONG PASSWD")
+		metrics.ApiFailures.WithLabelValues("login_user").Inc()
 		http.Error(w, "Email or Password is wrong", http.StatusNotFound)
 		return
 	}
@@ -36,5 +49,13 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	User_log.Email = user.Email
 	User_log.Session = true
 
-	json.NewEncoder(w).Encode(User_log)
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(User_log); err != nil {
+		metrics.ApiFailures.WithLabelValues("login_user").Inc()
+		http.Error(w, "Failed to encode user login data", http.StatusInternalServerError)
+	}
+}
+
+func InsertUser(w http.ResponseWriter, r *http.Request) {
+	database.PopulateDB()
 }
