@@ -1,32 +1,106 @@
-version: '3.8'
-
 services:
-  postgres:
-    image: postgres:14
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: amity
-      POSTGRES_DB: scalesync
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /data/postgres
+      TZ: Asia/Tehran
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${DB_NAME} -U ${DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgresql:/data/postgres
     ports:
-      - "5432:5432"  # Expose PostgreSQL on the default port
+      - "5432:5432"
+    restart: unless-stopped
     networks:
-      - go-post
+      - monitoring
+  
+  # go-app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5000:8080"
+  #   environment:
+  #     DB_HOST: ${DB_HOST}
+  #     DB_PORT: ${DB_PORT}
+  #     DB_USER: ${DB_USER}
+  #     DB_PASSWORD: ${DB_PASS}
+  #     DB_NAME: ${DB_NAME}
+  #     DISPLAY: "host.docker.internal:0"
+  #   volumes:
+  #     - /tmp/.X11-unix:/tmp/.X11-unix
+  #   depends_on:
+  #     - postgresql
+  #   networks:
+  #     - go-post
+  #     - x11-network
 
-  go-app:
-    build: .
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
     ports:
-      - "5000:8080"  # Expose Go app on port 5000 (maps to Go's 8080)
-    environment:
-      DB_HOST: postgres  # Connect to the 'postgres' service
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: amity
-      DB_NAME: go_crud
-    depends_on:
-      - postgres
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    restart: unless-stopped
     networks:
-      - go-post
+      - monitoring
+
+  postgresql-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgresql-exporter
+    ports:
+      - "9187:9187"
+    environment:
+      # DATA_SOURCE_NAME: "postgres://:@$"
+      - DATA_SOURCE_URI=${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable
+      - DATA_SOURCE_USER=${DB_USER}
+      - DATA_SOURCE_PASS=${DB_PASS}
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      prometheus:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - grafana:/var/lib/grafana
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+volumes:
+  prometheus:
+  grafana:
+  postgresql:
 
 networks:
+  monitoring:
+    driver: bridge
   go-post:
+    driver: bridge
+  x11-network:
     driver: bridge

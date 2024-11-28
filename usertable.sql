@@ -90,7 +90,7 @@ INSERT INTO items (name, category, description, quantity, unit_price, total_pric
 
 
 -- warehouses
-DROP TABLE IF EXISTS warehouses;
+DROP TABLE IF EXISTS warehouses CASCADE;
 
 CREATE TABLE warehouses (
     warehouse_id SERIAL PRIMARY KEY,

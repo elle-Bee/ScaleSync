@@ -9,6 +9,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/prometheus/client_golang v1.20.5
 	golang.org/x/crypto v0.28.0
+	golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6
 )
 
 require (
