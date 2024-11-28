@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   postgresql:
     image: postgres:latest
@@ -22,12 +20,33 @@ services:
     restart: unless-stopped
     networks:
       - monitoring
+  
+  # go-app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5000:8080"
+  #   environment:
+  #     DB_HOST: ${DB_HOST}
+  #     DB_PORT: ${DB_PORT}
+  #     DB_USER: ${DB_USER}
+  #     DB_PASSWORD: ${DB_PASS}
+  #     DB_NAME: ${DB_NAME}
+  #     DISPLAY: "host.docker.internal:0"
+  #   volumes:
+  #     - /tmp/.X11-unix:/tmp/.X11-unix
+  #   depends_on:
+  #     - postgresql
+  #   networks:
+  #     - go-post
+  #     - x11-network
 
   prometheus:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - ./docker/prometheus:/etc/prometheus
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -46,7 +65,10 @@ services:
     ports:
       - "9187:9187"
     environment:
-      DATA_SOURCE_NAME: "postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
+      # DATA_SOURCE_NAME: "postgres://:@$"
+      - DATA_SOURCE_URI=${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable
+      - DATA_SOURCE_USER=${DB_USER}
+      - DATA_SOURCE_PASS=${DB_PASS}
     depends_on:
       postgresql:
         condition: service_healthy
@@ -55,27 +77,6 @@ services:
     restart: unless-stopped
     networks:
       - monitoring
-
-  go-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "5000:8080"
-    environment:
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASS}
-      DB_NAME: ${DB_NAME}
-      DISPLAY: "host.docker.internal:0"
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
-    depends_on:
-      - postgresql
-    networks:
-      - go-post
-      - x11-network
 
   grafana:
     image: grafana/grafana
