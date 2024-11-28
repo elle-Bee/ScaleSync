@@ -1,0 +1,21 @@
+databases:
+  - name: "scalesync"
+    user: "postgres"
+    password: "amity"
+    host: "localhost"
+    port: "5432"
+    sslmode: "disable"
+    exclude_databases:
+      - "go_crud"
+
+scrape_interval: 1s
+
+max_connections: 5
+
+custom_queries:
+  - query: "SELECT count(*) FROM pg_stat_activity WHERE state = 'idle';"
+    metrics:
+      - idle_connections_count
+  - query: "SELECT pg_size_pretty(pg_database_size('scalesync')) AS db_size;"
+    metrics:
+      - db_size

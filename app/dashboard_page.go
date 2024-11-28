@@ -5,6 +5,8 @@ import (
 	"ScaleSync/pkg/models"
 	"ScaleSync/pkg/repository"
 
+	"log"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
@@ -16,29 +18,46 @@ func ShowDashboardPage(win fyne.Window, userLogin models.User_login) {
 
 	warehouseRepo := &repository.WarehouseRepository{DB: database.InitDB()}
 
-	// Initial content area
-	contentArea := container.NewVBox(ShowHomePage(win, userLogin, warehouseRepo)) // Starts at home page
+	homePage := ShowHomePage(win, userLogin, warehouseRepo)
+	if homePage == nil {
+		log.Println("Error: HomePage returned nil")
+		return
+	}
+	contentArea := container.NewVBox(homePage)
 
-	// Sidebar with navigation options
 	sidebar := container.NewVBox(
 		widget.NewButtonWithIcon("Home", theme.HomeIcon(), func() {
 			contentArea.RemoveAll()
-			contentArea.Add(ShowHomePage(win, userLogin, warehouseRepo))
-			contentArea.Refresh()
+			homePage := ShowHomePage(win, userLogin, warehouseRepo)
+			if homePage != nil {
+				contentArea.Add(homePage)
+				contentArea.Refresh()
+			} else {
+				log.Println("Error: HomePage returned nil on button click")
+			}
 		}),
 		widget.NewButtonWithIcon("Dashboard", theme.ComputerIcon(), func() {
 			contentArea.RemoveAll()
-			contentArea.Add(ShowTablePage(win, userLogin, warehouseRepo))
-			contentArea.Refresh()
+			tablePage := ShowTablePage(win, userLogin, warehouseRepo)
+			if tablePage != nil {
+				contentArea.Add(tablePage)
+				contentArea.Refresh()
+			} else {
+				log.Println("Error: TablePage returned nil on button click")
+			}
 		}),
 		widget.NewButtonWithIcon("Profile", theme.AccountIcon(), func() {
 			contentArea.RemoveAll()
-			contentArea.Add(ShowProfilePage(win, userLogin))
-			contentArea.Refresh()
+			profilePage := ShowProfilePage(win, userLogin)
+			if profilePage != nil {
+				contentArea.Add(profilePage)
+				contentArea.Refresh()
+			} else {
+				log.Println("Error: ProfilePage returned nil on button click")
+			}
 		}),
 	)
 
-	// Layout that combines the sidebar and content area
 	mainLayout := container.NewHBox(sidebar, contentArea)
 	win.SetContent(mainLayout)
 }
